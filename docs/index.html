@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGP Financial Literacy | Financial Education for College Athletes</title>
+    <meta name="description" content="AGP Financial Literacy delivers in-person financial education programs for college athletes. Trusted by athletic departments at ECU, Coastal Carolina, Ball State, and more.">
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            background: #fff;
+        }
+        img { max-width: 100%; height: auto; display: block; }
+        a { color: inherit; text-decoration: none; }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; }
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+        h2 { font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: 1rem; }
+        h3 { font-size: 1.25rem; }
+
+        /* ===== COLORS ===== */
+        :root {
+            --gold: #c9a227;
+            --gold-dark: #a8871e;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --light: #f7f6f2;
+            --gray: #6b6b6b;
+            --gray-light: #e8e8e8;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        section { padding: 80px 0; }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 0 24px;
+            transition: box-shadow 0.3s;
+        }
+        nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+        .nav-logo img { height: 60px; width: auto; }
+        .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+        .nav-links a {
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-cta {
+            background: var(--gold);
+            color: var(--black) !important;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .nav-cta:hover { background: var(--gold-dark); }
+
+        /* Mobile nav */
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+        .nav-toggle span { display: block; width: 24px; height: 2px; background: #fff; margin: 5px 0; transition: 0.3s; }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            background: var(--black);
+            overflow: hidden;
+            padding-top: 80px;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('images/photos/hero-ballstate.jpg') center center / cover no-repeat;
+            opacity: 0.4;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+            padding: 60px 24px;
+        }
+        .hero h1 {
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+        .hero h1 span { color: var(--gold); }
+        .hero p {
+            color: #ccc;
+            font-size: 1.2rem;
+            margin-bottom: 36px;
+            max-width: 550px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: var(--black);
+        }
+        .btn-gold:hover { background: var(--gold-dark); transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+            margin-left: 16px;
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        /* ===== TRUSTED BY (logo strip) ===== */
+        .trusted {
+            background: var(--light);
+            padding: 40px 0;
+        }
+        .trusted-label {
+            text-align: center;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--gray);
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        .trusted-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .trusted-logos a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 180px;
+            height: 70px;
+            transition: all 0.3s;
+        }
+        .trusted-logos a:hover { transform: scale(1.05); }
+        .trusted-logos img {
+            max-height: 55px;
+            max-width: 140px;
+            width: auto;
+            height: auto;
+        }
+
+        /* ===== WHAT WE DO ===== */
+        .what-we-do { background: var(--white); }
+        .what-we-do .section-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 48px;
+        }
+        .what-we-do .section-intro p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+        .service-card {
+            padding: 36px 28px;
+            background: var(--light);
+            border-left: 4px solid var(--gold);
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s;
+        }
+        .service-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .service-card h3 { margin-bottom: 10px; }
+        .service-card p { color: var(--gray); font-size: 0.95rem; }
+
+        /* ===== PROGRAM (4-year framework) ===== */
+        .program { background: var(--black); color: var(--white); }
+        .program h2 span { color: var(--gold); }
+        .program .section-intro {
+            max-width: 700px;
+            margin-bottom: 48px;
+        }
+        .program .section-intro p { color: #aaa; font-size: 1.1rem; }
+        .year-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .year-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 32px 24px;
+            transition: all 0.3s;
+        }
+        .year-card:hover {
+            border-color: var(--gold);
+            background: rgba(201,162,39,0.08);
+        }
+        .year-num {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .year-card h3 { font-size: 1.15rem; margin-bottom: 12px; }
+        .year-card p { color: #999; font-size: 0.9rem; line-height: 1.5; }
+
+        /* ===== IN ACTION (social wall) ===== */
+        .in-action {
+            background: var(--black);
+            padding: 0;
+            overflow: hidden;
+        }
+        .social-wall-header {
+            background: var(--black);
+            text-align: center;
+            padding: 48px 24px 32px;
+        }
+        .social-wall-header h2 {
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+        .social-wall-header h2 span { color: var(--gold); }
+        .social-wall-header p {
+            color: #888;
+            font-size: 0.95rem;
+        }
+        .social-wall {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 220px);
+            gap: 3px;
+        }
+        .social-wall img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.3s;
+        }
+        .social-wall img:hover { opacity: 0.85; }
+        .social-wall .tall {
+            grid-row: span 2;
+        }
+        .social-wall .wide {
+            grid-column: span 2;
+        }
+        .social-wall-footer {
+            background: var(--black);
+            text-align: center;
+            padding: 20px 24px;
+        }
+        .social-wall-footer img {
+            height: 30px;
+            width: auto;
+            display: inline-block;
+            opacity: 0.5;
+        }
+
+        /* ===== TESTIMONIALS ===== */
+        .testimonials { background: var(--light); }
+        .testimonials h2 { text-align: center; margin-bottom: 48px; }
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+        .testimonial-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 36px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .testimonial-card blockquote {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .testimonial-card blockquote::before {
+            content: '\201C';
+            font-size: 3rem;
+            color: var(--gold);
+            line-height: 0;
+            vertical-align: -0.5em;
+            margin-right: 4px;
+        }
+        .testimonial-author {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .testimonial-role {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* ===== TEAM ===== */
+        .team { background: var(--white); }
+        .team h2 { text-align: center; margin-bottom: 48px; }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .team-member {
+            text-align: center;
+        }
+        .team-photo {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            border: 4px solid var(--gray-light);
+        }
+        .team-member h3 { margin-bottom: 4px; font-size: 1.3rem; }
+        .team-title {
+            color: var(--gold-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        .team-bio {
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+        .team-credentials {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .credential-tag {
+            background: var(--light);
+            color: var(--gray);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* ===== DEMO CTA ===== */
+        .demo-cta {
+            background: var(--gold);
+            text-align: center;
+        }
+        .demo-cta h2 {
+            color: var(--black);
+            margin-bottom: 12px;
+        }
+        .demo-cta p {
+            color: rgba(26,26,26,0.7);
+            font-size: 1.1rem;
+            max-width: 550px;
+            margin: 0 auto 32px;
+        }
+        .btn-dark {
+            background: var(--black);
+            color: var(--white);
+        }
+        .btn-dark:hover {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        /* ===== DEMO CONTACT INFO ===== */
+        .demo-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 32px;
+        }
+        .demo-contact-item a {
+            color: rgba(26,26,26,0.6);
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .demo-contact-item a:hover { color: var(--black); }
+        .demo-contact-divider {
+            width: 1px;
+            height: 16px;
+            background: rgba(26,26,26,0.25);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #111;
+            color: #666;
+            text-align: center;
+            padding: 40px 24px 24px;
+            font-size: 0.85rem;
+        }
+        footer a { color: #888; }
+        footer a:hover { color: var(--gold); }
+        .footer-credentials {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .footer-credentials img {
+            height: 40px;
+            width: auto;
+            opacity: 0.5;
+        }
+        .footer-disclaimer {
+            max-width: 700px;
+            margin: 12px auto 0;
+            font-size: 0.75rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .services-grid { grid-template-columns: 1fr; }
+            .year-grid { grid-template-columns: repeat(2, 1fr); }
+            .social-wall { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 180px); }
+            .social-wall .tall { grid-row: span 1; }
+            .testimonial-grid { grid-template-columns: 1fr; }
+            .team-grid { grid-template-columns: 1fr; gap: 40px; }
+        }
+        @media (max-width: 768px) {
+            section { padding: 60px 0; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(26,26,26,0.98);
+                flex-direction: column;
+                padding: 20px 24px;
+                gap: 16px;
+            }
+            .nav-links.active { display: flex; }
+            .nav-toggle { display: block; }
+            .nav-cta { text-align: center; width: 100%; display: block; }
+            .hero { min-height: 80vh; }
+            .hero-content { padding: 40px 24px; }
+            .btn-outline { margin-left: 0; margin-top: 12px; display: block; text-align: center; }
+            .year-grid { grid-template-columns: 1fr; }
+            .social-wall { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+            .social-wall img { height: 180px; }
+            .social-wall .tall { grid-row: span 1; }
+            .social-wall .wide { grid-column: span 1; }
+            .trusted-logos { gap: 32px; }
+            .trusted-logos img { height: 40px; }
+            .demo-contact { flex-direction: column; gap: 12px; }
+            .demo-contact-divider { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav id="navbar">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">
+            <img src="images/logos/agp-logo-white.png" alt="AGP Financial Literacy">
+        </a>
+        <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links">
+            <li><a href="#what-we-do">What We Do</a></li>
+            <li><a href="#program">The Program</a></li>
+            <li><a href="#in-action"><span style="color:var(--gold)">#AGP</span>InAction</a></li>
+            <li><a href="#team">Our Team</a></li>
+            <li><a href="#contact" class="nav-cta">Let's Talk</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+        <h1>Financial Education That <span>Athletes Actually Engage With</span></h1>
+        <p>We deliver in-person financial literacy programs to college athletic departments. Interactive sessions. Real-world skills. Athletes who pay attention.</p>
+        <a href="#contact" class="btn btn-gold">Let's Talk About Your Program</a>
+        <a href="#program" class="btn btn-outline">See the Curriculum</a>
+    </div>
+</section>
+
+<!-- ===== TRUSTED BY ===== -->
+<div class="trusted">
+    <div class="container">
+        <p class="trusted-label">Trusted by Athletic Departments at</p>
+        <div class="trusted-logos">
+            <a><img src="images/partners/ecu.png" alt="East Carolina University"></a>
+            <a><img src="images/partners/ccu.png" alt="Coastal Carolina University"></a>
+            <a><img src="images/partners/ballstate.png" alt="Ball State University"></a>
+            <a><img src="images/partners/wichitastate.png" alt="Wichita State University"></a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== WHAT WE DO ===== -->
+<section class="what-we-do" id="what-we-do">
+    <div class="container">
+        <div class="section-intro">
+            <h2>Your Athletes Will Face Financial Decisions. We Make Sure They're Ready.</h2>
+            <p>NIL deals. First paychecks. Student loans. Taxes. Most college athletes have never been taught how money works. AGP delivers hands-on financial education that sticks.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>Team Sessions</h3>
+                <p>Interactive, in-person presentations for entire teams or multi-sport groups. Not a lecture. Athletes participate, compete, and learn by doing.</p>
+            </div>
+            <div class="service-card">
+                <h3>The Game of Life</h3>
+                <p>Our signature simulation where athletes draft careers, manage budgets, handle curveballs, and compete against each other. The session they talk about for weeks.</p>
+            </div>
+            <div class="service-card">
+                <h3>1-on-1 Consultations</h3>
+                <p>Private sessions for athletes who want to go deeper. Budgeting help, tax questions, NIL income planning, life-after-college prep.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== THE PROGRAM ===== -->
+<section class="program" id="program">
+    <div class="container">
+        <div class="section-intro">
+            <h2>A <span>Progressive Curriculum</span> That Grows With Your Athletes</h2>
+            <p>Financial literacy isn't a single event. AGP builds a progression that develops over time — whether an athlete is with you all four years or arrives as a junior transfer. We meet them where they are.</p>
+        </div>
+        <div class="year-grid">
+            <div class="year-card">
+                <div class="year-num">Level 1</div>
+                <h3>Foundations</h3>
+                <p>Budgeting basics, spending psychology, saving habits, and financial discipline. The starting point for every athlete — freshmen and new transfers alike.</p>
+            </div>
+            <div class="year-card">
+                <div class="year-num">Level 2</div>
+                <h3>Building</h3>
+                <p>Taxes (including NIL), credit and debt management, insurance basics, and intro to investing. For athletes ready for the next step.</p>
+            </div>
+            <div class="year-card">
+                <div class="year-num">Level 3</div>
+                <h3>Protecting</h3>
+                <p>Maximizing financial potential, contracts and negotiation, protecting your brand, advanced investing.</p>
+            </div>
+            <div class="year-card">
+                <div class="year-num">Level 4</div>
+                <h3>Transitioning</h3>
+                <p>Life after college, career financial planning, real estate basics, and building long-term wealth.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== IN ACTION (Social Wall) ===== -->
+<section class="in-action" id="in-action">
+    <div class="social-wall-header">
+        <h2><span>#AGP</span>InAction</h2>
+        <p>Interactive sessions at athletic departments across the country</p>
+    </div>
+    <div class="social-wall">
+        <img src="images/photos/stephen-presenting-ballstate.jpg" alt="Stephen presenting at Ball State" class="tall">
+        <img src="images/photos/hero-ballstate.jpg" alt="Ball State athletes engaged" class="wide">
+        <img src="images/photos/lindsey-presenting-ecu.jpg" alt="Lindsey presenting at ECU">
+        <img src="images/photos/athletes-working-ccu.jpg" alt="Athletes at Coastal Carolina working on activities">
+        <img src="images/photos/stephen-ccu.jpg" alt="Stephen presenting at Coastal Carolina">
+        <img src="images/photos/ecu-football.jpg" alt="ECU football athletes in session">
+    </div>
+    <div class="social-wall-footer">
+        <img src="images/logos/agp-logo-white.png" alt="AGP Financial Literacy">
+    </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials">
+    <div class="container">
+        <h2>What They're Saying</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <blockquote>AGP Financial Literacy has been an incredible resource that delivers tailored financial education on a range of topics to meet student-athletes exactly where they are.</blockquote>
+                <p class="testimonial-author">Brooke Schultz</p>
+                <p class="testimonial-role">Student-Athlete Experience Coordinator, Wichita State Athletics</p>
+            </div>
+            <div class="testimonial-card">
+                <blockquote>We're very appreciative of the time and energy Stephen brought to meet with over 150 of our student-athletes this spring. His presentations were not only informative but engaging and fun. We would highly recommend his training to any department looking to expand their financial literacy education efforts!</blockquote>
+                <p class="testimonial-author">Ryne Hillenberg</p>
+                <p class="testimonial-role">Senior Associate Athletics Director, Ball State Athletics</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TEAM ===== -->
+<section class="team" id="team">
+    <div class="container">
+        <h2>Meet the Team</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="images/photos/headshot-stephen.jpg" alt="Stephen Pugh" class="team-photo">
+                <h3>Stephen Pugh</h3>
+                <p class="team-title">Founder &amp; Financial Education Specialist</p>
+                <p class="team-bio">Stephen is a dedicated financial education specialist with a passion for empowering athletes through financial literacy. His expertise lies in simplifying financial concepts and making them relatable to athletes' lives and career trajectories. During a decade working in college athletics at JMU, Miami (FL), Tulsa, and Southern Miss, Stephen saw firsthand the need for financial education and the impact it could have on the futures of athletes.</p>
+                <div class="team-credentials">
+                    <span class="credential-tag">MBA, University of Miami</span>
+                    <span class="credential-tag">BS Finance, UT Austin</span>
+                    <span class="credential-tag">CFEI Certified</span>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="images/photos/headshot-lindsey.jpg" alt="Lindsey Mudge" class="team-photo">
+                <h3>Lindsey Mudge</h3>
+                <p class="team-title">Educational Consultant</p>
+                <p class="team-bio">Lindsey works as a Senior Lecturer of Accounting at Sam Houston State University. Her financial expertise combined with her ability to develop engaging and impactful curriculum makes her an integral part of the team. She is also the Treasurer and a volunteer with A Time to Read, a non-profit focused on increasing reading literacy in local elementary schools. As a coaches' wife and a college instructor, she has a strong passion for helping student-athletes develop their lives off the court.</p>
+                <div class="team-credentials">
+                    <span class="credential-tag">CPA</span>
+                    <span class="credential-tag">MS Finance, Texas A&amp;M</span>
+                    <span class="credential-tag">BS Accounting, Texas A&amp;M</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DEMO CTA ===== -->
+<section class="demo-cta" id="contact">
+    <div class="container">
+        <h2>See It for Yourself</h2>
+        <p>Not sure if AGP is the right fit? We'll run a free demo session with your athletes so you can see the energy in the room before you commit to anything.</p>
+        <a href="mailto:stephen.pugh@agpfinancialliteracy.com?subject=Demo%20Session%20Request" class="btn btn-dark">Book a Demo Session for Your Athletes</a>
+        <div class="demo-contact">
+            <div class="demo-contact-item">
+                <a href="mailto:stephen.pugh@agpfinancialliteracy.com">stephen.pugh@agpfinancialliteracy.com</a>
+            </div>
+            <div class="demo-contact-divider"></div>
+            <div class="demo-contact-item">
+                <a href="tel:9363375280">936-337-5280</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="container">
+        <div class="footer-credentials">
+            <img src="images/credentials/jumpstart.jpg" alt="JumpStart Financial Literacy">
+            <img src="images/credentials/nfec.jpg" alt="NFEC">
+            <img src="images/credentials/n4a.jpg" alt="N4A">
+        </div>
+        <p>&copy; 2026 AGP Financial Literacy. All rights reserved.</p>
+        <p class="footer-disclaimer">AGP Financial Literacy provides information for educational purposes only. We do not offer financial advice, investment recommendations, or personalized financial planning.</p>
+    </div>
+</footer>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.remove('active');
+        });
+    });
+</script>
+
+</body>
+</html>
