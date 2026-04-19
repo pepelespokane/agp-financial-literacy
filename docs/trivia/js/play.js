@@ -1,6 +1,6 @@
 // Player view — lobby, questions, countdown, answer elimination, scoring.
 
-console.log('%cplay.js v5 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%cplay.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId, loadPlayerSession, formatScore } = window.AGP;
@@ -80,7 +80,8 @@ console.log('%cplay.js v5 2026-04-19', 'color:#0af;font-weight:bold;');
   scoreName.textContent = session.name;
 
   async function init() {
-    const resp = await fetch('questions.json');
+    // Cache-bust so a stale questions.json doesn't produce wrong is_correct values.
+    const resp = await fetch('questions.json?v=' + Date.now(), { cache: 'no-store' });
     const data = await resp.json();
     questions = data.questions;
 
@@ -224,33 +225,29 @@ console.log('%cplay.js v5 2026-04-19', 'color:#0af;font-weight:bold;');
 
     selectedOriginalIndex = originalIdx;
 
-    // Upsert to DB. Do NOT send submitted_at — let the DB default to now() so
-    // the timestamp is server-side-authoritative (matches question_started_at,
-    // which is also set server-side). This prevents client-clock-skew from
-    // producing absurd point values during scoring.
+    // Call the submit_answer RPC so submitted_at is set to server now() on
+    // BOTH insert AND update. A plain upsert would preserve the original
+    // submitted_at on updates — meaning changing your answer later would still
+    // be scored at your first-pick time. The RPC explicitly refreshes it.
     const isCorrect = originalIdx === q.correct;
-    sb.from('answers')
-      .upsert({
-        game_id: gameId,
-        player_id: playerId,
-        question_id: q.id,
-        answer_index: originalIdx,
-        is_correct: isCorrect,
-        points_earned: 0,
-      }, { onConflict: 'game_id,player_id,question_id' })
-      .then(({ error }) => {
-        if (error) {
-          console.error('Answer upsert error:', error);
-          // Surface errors in the UI so problems don't silently fail.
-          const flash = document.getElementById('points-flash');
-          if (flash) {
-            flash.textContent = 'Answer save failed: ' + (error.message || 'check connection');
-            flash.className = 'points-flash zero';
-          }
-        } else {
-          console.log('Answer saved:', { question_id: q.id, answer_index: originalIdx, is_correct: isCorrect });
+    sb.rpc('submit_answer', {
+      p_game_id: gameId,
+      p_player_id: playerId,
+      p_question_id: q.id,
+      p_answer_index: originalIdx,
+      p_is_correct: isCorrect,
+    }).then(({ error }) => {
+      if (error) {
+        console.error('submit_answer RPC error:', error);
+        const flash = document.getElementById('points-flash');
+        if (flash) {
+          flash.textContent = 'Answer save failed: ' + (error.message || 'check connection');
+          flash.className = 'points-flash zero';
         }
-      });
+      } else {
+        console.log('Answer saved:', { question_id: q.id, answer_index: originalIdx, is_correct: isCorrect });
+      }
+    });
   }
 
   // ── Timer ───────────────────────────────────────────────────────────────
