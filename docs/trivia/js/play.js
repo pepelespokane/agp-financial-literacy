@@ -127,6 +127,14 @@
       // Then if we're past the answering phase, apply the appropriate end-of-phase state.
       if (newQ) {
         showQuestion(q, game.question_started_at);
+      } else if (game.question_phase === 'answering' && !timerInterval) {
+        // Same question still running but our timer stopped (tab was backgrounded
+        // and setInterval was throttled). Resume the countdown from the server's
+        // question_started_at so elapsed time stays authoritative.
+        if (game.question_started_at) {
+          questionStartTime = new Date(game.question_started_at).getTime();
+        }
+        startTimer(q);
       }
 
       if (game.question_phase === 'closed') {
@@ -136,7 +144,7 @@
         stopTimer();
         showResults(q);
       }
-      // 'answering' is handled by showQuestion (when newQ) or left alone (same Q still running)
+      // 'answering' is handled by showQuestion (when newQ) or the resume-branch above
     } else {
       showWaiting();
     }
@@ -151,7 +159,7 @@
     scoreBar.classList.add('hidden');
   }
 
-  async function showQuestion(q, startedAt) {
+  function showQuestion(q, startedAt) {
     waitingCard.classList.add('hidden');
     finishedCard.classList.add('hidden');
     questionCard.classList.remove('hidden');
@@ -170,20 +178,9 @@
     const { shuffled, map, correctDisplay } = shuffleOptions(q.options, q.correct);
     shuffleMap = map;
 
-    // Check if already answered
-    const { data: existing } = await sb
-      .from('answers')
-      .select('answer_index')
-      .eq('game_id', gameId)
-      .eq('player_id', playerId)
-      .eq('question_id', q.id)
-      .maybeSingle();
-
-    if (existing) {
-      selectedOriginalIndex = existing.answer_index;
-    }
-
-    // Build answer buttons
+    // Build answer buttons FIRST so they appear immediately. The existing-answer
+    // check runs in the background below — a slow DB response shouldn't delay
+    // the UI. This was the "question text changed but answers didn't" bug.
     answerGrid.innerHTML = '';
     shuffled.forEach((opt, displayIdx) => {
       const btn = document.createElement('button');
@@ -191,18 +188,28 @@
       btn.id = 'ans-' + displayIdx;
       btn.innerHTML = `<span class="letter">${LETTERS[displayIdx]}</span><span>${escapeHtml(opt)}</span>`;
       btn.dataset.displayIndex = displayIdx;
-
-      if (selectedOriginalIndex === map[displayIdx]) {
-        btn.classList.add('selected');
-      }
-
       btn.addEventListener('click', () => pickAnswer(q, displayIdx));
       answerGrid.appendChild(btn);
     });
 
-    // Start timer
+    // Start timer immediately — don't wait on network.
     questionStartTime = startedAt ? new Date(startedAt).getTime() : Date.now();
     startTimer(q);
+
+    // Background: if we already answered this Q (e.g. we reloaded), mark the button.
+    sb.from('answers')
+      .select('answer_index')
+      .eq('game_id', gameId)
+      .eq('player_id', playerId)
+      .eq('question_id', q.id)
+      .maybeSingle()
+      .then(({ data: existing }) => {
+        if (!existing || currentQId !== q.id) return;
+        selectedOriginalIndex = existing.answer_index;
+        answerGrid.querySelectorAll('.answer-btn').forEach((btn, i) => {
+          if (map[i] === existing.answer_index) btn.classList.add('selected');
+        });
+      });
   }
 
   function pickAnswer(q, displayIdx) {
@@ -218,7 +225,10 @@
 
     selectedOriginalIndex = originalIdx;
 
-    // Upsert to DB
+    // Upsert to DB. Do NOT send submitted_at — let the DB default to now() so
+    // the timestamp is server-side-authoritative (matches question_started_at,
+    // which is also set server-side). This prevents client-clock-skew from
+    // producing absurd point values during scoring.
     const isCorrect = originalIdx === q.correct;
     sb.from('answers')
       .upsert({
@@ -228,7 +238,6 @@
         answer_index: originalIdx,
         is_correct: isCorrect,
         points_earned: 0,
-        submitted_at: new Date().toISOString(),
       }, { onConflict: 'game_id,player_id,question_id' })
       .then(({ error }) => {
         if (error) console.error('Answer upsert error:', error);

@@ -291,16 +291,13 @@
     startBtn.textContent = 'Starting…';
 
     currentQIndex = 0;
-    questionStartTime = Date.now();
-    const { error } = await sb
-      .from('games')
-      .update({
-        status: 'active',
-        current_question_id: questions[0].id,
-        question_phase: 'answering',
-        question_started_at: new Date().toISOString(),
-      })
-      .eq('id', gameId);
+    // Use the server RPC so question_started_at is set from the DB's now()
+    // (not the laptop's possibly-drifted clock). Then re-fetch to mirror that
+    // authoritative timestamp into our local timer.
+    const { error } = await sb.rpc('start_question', {
+      p_game_id: gameId,
+      p_question_id: questions[0].id,
+    });
 
     if (error) {
       console.error(error);
@@ -309,6 +306,16 @@
       startBtn.textContent = 'Start Game';
       return;
     }
+
+    const { data: game } = await sb
+      .from('games')
+      .select('question_started_at')
+      .eq('id', gameId)
+      .single();
+    questionStartTime = game?.question_started_at
+      ? new Date(game.question_started_at).getTime()
+      : Date.now();
+
     gameStatus = 'active';
     questionPhase = 'answering';
     showQuestionCard();
@@ -345,17 +352,23 @@
     nextBtn.disabled = true;
     currentQIndex++;
     const q = questions[currentQIndex];
-    questionStartTime = Date.now();
-    const { error } = await sb
+
+    const { error } = await sb.rpc('start_question', {
+      p_game_id: gameId,
+      p_question_id: q.id,
+    });
+    if (error) { console.error(error); nextBtn.disabled = false; return; }
+
+    const { data: game } = await sb
       .from('games')
-      .update({
-        current_question_id: q.id,
-        question_phase: 'answering',
-        question_started_at: new Date().toISOString(),
-      })
-      .eq('id', gameId);
+      .select('question_started_at')
+      .eq('id', gameId)
+      .single();
+    questionStartTime = game?.question_started_at
+      ? new Date(game.question_started_at).getTime()
+      : Date.now();
+
     nextBtn.disabled = false;
-    if (error) { console.error(error); return; }
     questionPhase = 'answering';
     showQuestionCard();
   });
