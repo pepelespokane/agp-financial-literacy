@@ -220,7 +220,8 @@
   }
   function updateTimer() {
     if (!questionStartTime) return;
-    const elapsed = (Date.now() - questionStartTime) / 1000;
+    // Clamp elapsed to 0 to protect against clock skew between the host and display machines.
+    const elapsed = Math.max(0, (Date.now() - questionStartTime) / 1000);
     const remaining = Math.max(0, TOTAL_TIME - elapsed);
     setTimerTo(remaining);
     if (remaining <= 0) stopTimer();
@@ -416,6 +417,17 @@
       { event: '*', schema: 'public', table: 'answers', filter: `game_id=eq.${gameId}` },
       () => debouncedAnswered())
     .subscribe();
+
+  // If the display laptop wakes from sleep or the tab was backgrounded, pull fresh state.
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    const { data: game } = await sb
+      .from('games')
+      .select('id,name,status,current_question_id,question_phase,question_started_at')
+      .eq('id', gameId)
+      .maybeSingle();
+    if (game) applyGame(game);
+  });
 
   // ── Init ──────────────────────────────────────────────────────────────
   loadQuestions().then(loadGame);

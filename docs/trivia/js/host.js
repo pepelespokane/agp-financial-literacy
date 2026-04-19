@@ -96,7 +96,8 @@
 
   function updateTimer() {
     if (!questionStartTime) return;
-    const elapsed = (Date.now() - questionStartTime) / 1000;
+    // Defensive clamp — host uses its own local clock so skew isn't expected, but keeps behavior identical across views.
+    const elapsed = Math.max(0, (Date.now() - questionStartTime) / 1000);
     const remaining = Math.max(0, TOTAL_TIME - elapsed);
     const secs = Math.ceil(remaining);
 
@@ -467,6 +468,22 @@
       { event: '*', schema: 'public', table: 'answers', filter: `game_id=eq.${gameId}` },
       () => debouncedDistribution())
     .subscribe();
+
+  // If the host tab was backgrounded, browsers throttle setInterval — the timer can
+  // stall and autoClose may not fire. Re-check on focus: if time is already up,
+  // close immediately; otherwise restart the interval so the countdown keeps moving.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (questionPhase === 'answering' && questionStartTime) {
+      const elapsed = (Date.now() - questionStartTime) / 1000;
+      if (elapsed >= TOTAL_TIME) {
+        stopTimer();
+        autoClose();
+      } else {
+        startTimer();
+      }
+    }
+  });
 
   // ── Helpers ─────────────────────────────────────────────────────────────
 

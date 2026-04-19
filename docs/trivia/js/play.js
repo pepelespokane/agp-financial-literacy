@@ -123,16 +123,20 @@
 
       scoreBar.classList.remove('hidden');
 
-      if (game.question_phase === 'answering') {
-        if (newQ) {
-          showQuestion(q, game.question_started_at);
-        }
-      } else if (game.question_phase === 'closed') {
+      // On a new question (including page reload mid-game), always build the UI first.
+      // Then if we're past the answering phase, apply the appropriate end-of-phase state.
+      if (newQ) {
+        showQuestion(q, game.question_started_at);
+      }
+
+      if (game.question_phase === 'closed') {
         stopTimer();
+        disableAllButtons();
       } else if (game.question_phase === 'results') {
         stopTimer();
         showResults(q);
       }
+      // 'answering' is handled by showQuestion (when newQ) or left alone (same Q still running)
     } else {
       showWaiting();
     }
@@ -247,7 +251,9 @@
   }
 
   function updateTimerDisplay(q) {
-    const elapsed = (Date.now() - questionStartTime) / 1000;
+    // Clamp to 0 — host's clock may be ahead of the phone's, which would otherwise
+    // produce a negative elapsed and a "remaining" greater than TOTAL_TIME.
+    const elapsed = Math.max(0, (Date.now() - questionStartTime) / 1000);
     const remaining = Math.max(0, TOTAL_TIME - elapsed);
     const secs = Math.ceil(remaining);
 
@@ -447,6 +453,20 @@
       { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
       (payload) => handleGameState(payload.new))
     .subscribe();
+
+  // Mobile tab backgrounding can pause the realtime websocket and miss events.
+  // When the tab becomes visible again, re-fetch game state so we catch up.
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    const { data: game } = await sb
+      .from('games')
+      .select('status,current_question_id,question_phase,question_started_at')
+      .eq('id', gameId)
+      .single();
+    if (game) handleGameState(game);
+    refreshScore();
+    refreshRank();
+  });
 
   // INSERT-only: we just want the lobby count to tick up as players join.
   // Subscribing to '*' would also fan out every score UPDATE to every player,
