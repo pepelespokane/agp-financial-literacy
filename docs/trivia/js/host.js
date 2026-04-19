@@ -1,5 +1,7 @@
 // Host view — game control, timer, live answer distribution, scoring.
 
+console.log('%chost.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
+
 (function () {
   const { getGameId } = window.AGP;
   const gameId = getGameId();

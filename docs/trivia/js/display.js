@@ -1,6 +1,8 @@
 // Display view — projected screen. Renders QR for joining, big question view,
 // live answered count, results distribution, running leaderboard, and final podium.
 
+console.log('%cdisplay.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
+
 (function () {
   const { getGameId, formatScore } = window.AGP;
   const gameId = getGameId();

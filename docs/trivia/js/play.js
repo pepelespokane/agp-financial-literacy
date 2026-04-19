@@ -1,5 +1,7 @@
 // Player view — lobby, questions, countdown, answer elimination, scoring.
 
+console.log('%cplay.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
+
 (function () {
   const { getGameId, loadPlayerSession, formatScore } = window.AGP;
 
@@ -60,18 +62,15 @@
   }
 
   // ── Shuffle ─────────────────────────────────────────────────────────────
-  // Returns { shuffled: [...options], map: [origIdx, ...], correctDisplay: N }
+  // Disabled: in a live group setting, everyone should see the same A/B/C/D
+  // ordering as the projector and the host, so "the answer is B" on-stage
+  // means B on every phone. Returns identity mapping.
   function shuffleOptions(options, correctOriginal) {
     const indices = options.map((_, i) => i);
-    // Fisher-Yates
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
     return {
-      shuffled: indices.map(i => options[i]),
-      map: indices, // map[displayPos] = originalIndex
-      correctDisplay: indices.indexOf(correctOriginal),
+      shuffled: options.slice(),
+      map: indices,
+      correctDisplay: correctOriginal,
     };
   }
 
@@ -465,17 +464,27 @@
 
   // Mobile tab backgrounding can pause the realtime websocket and miss events.
   // When the tab becomes visible again, re-fetch game state so we catch up.
-  document.addEventListener('visibilitychange', async () => {
-    if (document.visibilityState !== 'visible') return;
+  async function resyncGameState() {
     const { data: game } = await sb
       .from('games')
       .select('status,current_question_id,question_phase,question_started_at')
       .eq('id', gameId)
       .single();
     if (game) handleGameState(game);
+  }
+
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    await resyncGameState();
     refreshScore();
     refreshRank();
   });
+
+  // Low-frequency poll as a safety net for missed realtime events. Only fires
+  // when the tab is visible — saves bandwidth on sleeping phones.
+  setInterval(() => {
+    if (document.visibilityState === 'visible') resyncGameState();
+  }, 3000);
 
   // INSERT-only: we just want the lobby count to tick up as players join.
   // Subscribing to '*' would also fan out every score UPDATE to every player,
