@@ -1,6 +1,6 @@
 // Host view — game control, timer, live answer distribution, scoring.
 
-console.log('%chost.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%chost.js v5 2026-04-19', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId } = window.AGP;
@@ -293,9 +293,12 @@ console.log('%chost.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
     startBtn.textContent = 'Starting…';
 
     currentQIndex = 0;
-    // Use the server RPC so question_started_at is set from the DB's now()
-    // (not the laptop's possibly-drifted clock). Then re-fetch to mirror that
-    // authoritative timestamp into our local timer.
+    // Host's local timer uses the host's own clock. Phones use the server's
+    // question_started_at (set by the RPC below) with their NTP-synced clocks.
+    // Do NOT mix the two — server time subtracted from host's drifted clock
+    // produces a wildly wrong countdown.
+    questionStartTime = Date.now();
+
     const { error } = await sb.rpc('start_question', {
       p_game_id: gameId,
       p_question_id: questions[0].id,
@@ -308,15 +311,6 @@ console.log('%chost.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
       startBtn.textContent = 'Start Game';
       return;
     }
-
-    const { data: game } = await sb
-      .from('games')
-      .select('question_started_at')
-      .eq('id', gameId)
-      .single();
-    questionStartTime = game?.question_started_at
-      ? new Date(game.question_started_at).getTime()
-      : Date.now();
 
     gameStatus = 'active';
     questionPhase = 'answering';
@@ -355,20 +349,14 @@ console.log('%chost.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
     currentQIndex++;
     const q = questions[currentQIndex];
 
+    // Host timer uses local clock — same reasoning as Start.
+    questionStartTime = Date.now();
+
     const { error } = await sb.rpc('start_question', {
       p_game_id: gameId,
       p_question_id: q.id,
     });
     if (error) { console.error(error); nextBtn.disabled = false; return; }
-
-    const { data: game } = await sb
-      .from('games')
-      .select('question_started_at')
-      .eq('id', gameId)
-      .single();
-    questionStartTime = game?.question_started_at
-      ? new Date(game.question_started_at).getTime()
-      : Date.now();
 
     nextBtn.disabled = false;
     questionPhase = 'answering';

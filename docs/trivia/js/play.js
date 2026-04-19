@@ -1,6 +1,6 @@
 // Player view — lobby, questions, countdown, answer elimination, scoring.
 
-console.log('%cplay.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%cplay.js v5 2026-04-19', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId, loadPlayerSession, formatScore } = window.AGP;
@@ -239,7 +239,17 @@ console.log('%cplay.js v4 2026-04-19', 'color:#0af;font-weight:bold;');
         points_earned: 0,
       }, { onConflict: 'game_id,player_id,question_id' })
       .then(({ error }) => {
-        if (error) console.error('Answer upsert error:', error);
+        if (error) {
+          console.error('Answer upsert error:', error);
+          // Surface errors in the UI so problems don't silently fail.
+          const flash = document.getElementById('points-flash');
+          if (flash) {
+            flash.textContent = 'Answer save failed: ' + (error.message || 'check connection');
+            flash.className = 'points-flash zero';
+          }
+        } else {
+          console.log('Answer saved:', { question_id: q.id, answer_index: originalIdx, is_correct: isCorrect });
+        }
       });
   }
 
