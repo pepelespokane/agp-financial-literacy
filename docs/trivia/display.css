@@ -1,0 +1,575 @@
+/* AGP Live Trivia — Display (projector) styles.
+   Dark navy background, oversized typography, designed for 1920x1080+ screens. */
+
+.display-body {
+  background: linear-gradient(180deg, #001A3D 0%, #002B5C 55%, #001230 100%);
+  color: #FFF;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Header */
+.display-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.display-header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.display-brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.display-event {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+}
+
+/* Main area */
+.display-main {
+  position: relative;
+  padding: 28px 40px 40px;
+  min-height: calc(100vh - 180px);
+}
+
+.display-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 38px 44px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 40px rgba(0,0,0,0.3);
+}
+
+/* Footer */
+.display-footer {
+  text-align: center;
+  padding: 14px 14px 24px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Lobby ────────────────────────────────────────────────────────────── */
+.lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+  min-height: 560px;
+}
+.lobby-left {
+  text-align: center;
+}
+.lobby-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 12px;
+}
+.lobby-h1 {
+  font-size: 72px;
+  font-weight: 800;
+  margin: 0 0 24px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.lobby-qr-wrap {
+  background: #FFF;
+  display: inline-block;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+}
+.lobby-qr-wrap canvas {
+  display: block;
+}
+.lobby-url {
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.lobby-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 30px;
+  border-left: 2px solid rgba(255,255,255,0.08);
+  min-height: 500px;
+  position: relative;
+}
+.lobby-count-label {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.lobby-count {
+  font-size: 120px;
+  font-weight: 800;
+  text-align: center;
+  color: #FFF;
+  line-height: 1;
+  margin-bottom: 22px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 4px 30px rgba(0, 120, 255, 0.25);
+}
+.lobby-players {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-height: 280px;
+  overflow: hidden;
+  align-content: flex-start;
+}
+.lobby-players li {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 17px;
+  font-weight: 600;
+  animation: pop-in 350ms cubic-bezier(.2,1.3,.4,1);
+}
+.lobby-players li .sport {
+  opacity: 0.6;
+  font-weight: 400;
+  margin-left: 6px;
+  font-size: 14px;
+}
+.lobby-empty {
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+  font-size: 18px;
+  margin-top: 10px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Question view ────────────────────────────────────────────────────── */
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.q-pill {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #FFF;
+}
+.q-counter {
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.6);
+  font-variant-numeric: tabular-nums;
+}
+.q-big {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 24px;
+  color: #FFF;
+  letter-spacing: -0.01em;
+}
+
+/* Display timer */
+.d-timer-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.d-timer-bar-bg {
+  flex: 1;
+  height: 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.d-timer-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4FC3F7, #FFF);
+  border-radius: 8px;
+  transition: width 200ms linear;
+}
+.d-timer-bar.timer-warn {
+  background: linear-gradient(90deg, #FFB300, #FFE082);
+}
+.d-timer-bar.timer-danger {
+  background: linear-gradient(90deg, #E53935, #FF8A80);
+}
+.d-timer-val {
+  font-size: 48px;
+  font-weight: 800;
+  min-width: 100px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #FFF;
+}
+.d-timer-s {
+  font-size: 24px;
+  opacity: 0.6;
+  margin-left: 4px;
+}
+
+/* Display options */
+.d-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.d-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #FFF;
+  transition: background 300ms, border-color 300ms;
+  position: relative;
+  overflow: hidden;
+}
+.d-option .d-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  color: #FFF;
+  font-weight: 800;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.d-option .d-text {
+  flex: 1;
+  line-height: 1.3;
+}
+.d-option .d-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 0%;
+  background: rgba(255,255,255,0.35);
+  transition: width 500ms ease;
+}
+.d-option.d-correct {
+  background: rgba(43, 174, 102, 0.25);
+  border-color: #2BAE66;
+}
+.d-option.d-correct .d-letter {
+  background: #2BAE66;
+}
+.d-option.d-correct .d-bar {
+  background: #2BAE66;
+}
+.d-option.d-dim {
+  opacity: 0.45;
+}
+
+.d-answered-line {
+  text-align: center;
+  font-size: 18px;
+  color: rgba(255,255,255,0.75);
+}
+.d-answered-count {
+  font-size: 28px;
+  font-weight: 800;
+  color: #FFF;
+  font-variant-numeric: tabular-nums;
+  margin-right: 8px;
+}
+
+.d-explain {
+  margin-top: 18px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.08);
+  border-left: 4px solid #4FC3F7;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.92);
+}
+.d-explain strong { color: #FFF; }
+
+/* ── Game layout: question (left) + leaderboard (right) ───────────────── */
+.game-layout {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+.game-question {
+  flex: 1 1 75%;
+  min-width: 0;           /* let text wrap inside flex */
+  margin-bottom: 0;
+}
+.game-layout .leaderboard {
+  flex: 0 0 25%;
+  background: rgba(0, 10, 30, 0.55);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 22px 22px 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 30px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+}
+.lb-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 14px;
+  text-align: center;
+}
+.lb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: lb;
+  flex: 1;
+  overflow: hidden;          /* safety: clip extras on short screens */
+}
+.lb-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 4px;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: background 500ms;
+}
+.lb-list li:last-child { border-bottom: none; }
+.lb-list li.lb-change {
+  background: rgba(79, 195, 247, 0.18);
+  border-radius: 6px;
+  padding-left: 8px;
+}
+.lb-rank {
+  font-weight: 800;
+  color: rgba(255,255,255,0.55);
+  min-width: 28px;
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+}
+.lb-name {
+  flex: 1;
+  color: #FFF;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lb-score {
+  font-weight: 800;
+  color: #4FC3F7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Full-leaderboard mode: triggered 30s after results phase if host hasn't
+   clicked Next. Hides the question and lets leaderboard take the whole width.
+   Row sizes tuned so top 10 fits cleanly on a ~900px usable-height viewport. */
+.game-layout.full-leaderboard .game-question {
+  display: none;
+}
+.game-layout.full-leaderboard .leaderboard {
+  flex: 1 1 100%;
+  padding: 26px 48px 28px;
+  min-width: 0;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.game-layout.full-leaderboard .lb-title {
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+.game-layout.full-leaderboard .lb-list li {
+  font-size: 22px;
+  padding: 10px 10px;
+  gap: 18px;
+}
+.game-layout.full-leaderboard .lb-rank {
+  font-size: 24px;
+  min-width: 48px;
+}
+.game-layout.full-leaderboard .lb-score {
+  font-size: 26px;
+}
+
+/* ── Finished view / podium ───────────────────────────────────────────── */
+.final-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  text-align: center;
+  margin-bottom: 6px;
+}
+.final-h1 {
+  font-size: 48px;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 22px;
+  letter-spacing: -0.02em;
+}
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 24px;
+  min-height: 260px;
+}
+.podium-slot {
+  flex: 0 0 240px;
+  text-align: center;
+}
+.podium-avatar {
+  width: 104px;
+  height: 104px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 800;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+.podium-slot.gold    .podium-avatar { background: #D4AF37; border-color: #F4D06F; color: #000; }
+.podium-slot.silver  .podium-avatar { background: #C0C0C0; border-color: #E5E5E5; color: #000; }
+.podium-slot.bronze  .podium-avatar { background: #CD7F32; border-color: #E5A772; color: #000; }
+.podium-name {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.podium-sport {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 10px;
+}
+.podium-score {
+  font-size: 32px;
+  font-weight: 800;
+  color: #4FC3F7;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 14px;
+}
+.podium-block {
+  border-radius: 12px 12px 0 0;
+  padding: 16px 0;
+  font-size: 42px;
+  font-weight: 900;
+}
+.podium-slot.gold   .podium-block { background: linear-gradient(180deg, #D4AF37, #8B6F1C); height: 140px; }
+.podium-slot.silver .podium-block { background: linear-gradient(180deg, #C0C0C0, #7A7A7A); height: 110px; }
+.podium-slot.bronze .podium-block { background: linear-gradient(180deg, #CD7F32, #7A4B1E); height: 80px; }
+
+.final-list {
+  max-width: 680px;
+  margin: 0 auto 24px;
+  padding: 0;
+  list-style: none;
+  counter-reset: finallist;
+}
+.final-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+.final-list .f-rank {
+  font-weight: 800;
+  min-width: 42px;
+  color: rgba(255,255,255,0.55);
+  font-variant-numeric: tabular-nums;
+}
+.final-list .f-name {
+  flex: 1;
+  font-weight: 600;
+}
+.final-list .f-sport {
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  margin-right: 14px;
+}
+.final-list .f-score {
+  font-weight: 800;
+  color: #4FC3F7;
+  font-variant-numeric: tabular-nums;
+}
+
+.final-cta {
+  text-align: center;
+  margin-top: 20px;
+}
+.final-cta-line {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 6px;
+}
+.final-cta-url {
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFF;
+  letter-spacing: 0.04em;
+}
+
+/* ── Responsive safety (narrow projectors/windows) ────────────────────── */
+@media (max-width: 1100px) {
+  .lobby-grid { grid-template-columns: 1fr; }
+  .lobby-right { border-left: none; border-top: 2px solid rgba(255,255,255,0.08); }
+  .d-options { grid-template-columns: 1fr; }
+  .game-layout { flex-direction: column; }
+  .game-layout .leaderboard { flex: 1 1 auto; min-width: 0; }
+}

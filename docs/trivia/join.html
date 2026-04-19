@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-gonzaga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Join — AGP Live Trivia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <img src="agp-logo-white.png" alt="AGP" style="height:28px; margin-right:10px;">
+  <div class="brand">Live Trivia</div>
+  <div class="event">Your Money Playbook</div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <h1>Join the Game</h1>
+    <p class="sub">Enter your name and sport to play. You'll answer questions on your phone throughout the session.</p>
+
+    <form id="join-form">
+      <label for="name">First Name</label>
+      <input type="text" id="name" autocomplete="given-name" placeholder="Your first name" required maxlength="40">
+
+      <label for="sport">Sport / Team</label>
+      <input type="text" id="sport" placeholder="e.g. Basketball, Baseball, Soccer" maxlength="40">
+
+      <button type="submit" class="btn" id="join-btn">Join Game</button>
+      <div id="status"></div>
+    </form>
+  </div>
+</main>
+
+<div class="footer">
+  AGP Financial Literacy &nbsp;|&nbsp; agpfinancialliteracy.com
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/join.js"></script>
+</body>
+</html>

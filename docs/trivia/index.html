@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-gonzaga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>AGP Live Trivia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <img src="agp-logo-white.png" alt="AGP" style="height:28px; margin-right:10px;">
+  <div class="brand">Live Trivia</div>
+  <div class="event">Your Money Playbook</div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <h1>Welcome</h1>
+    <p class="sub">Pick how you're joining this session:</p>
+    <a href="join.html" id="player-link" class="btn" style="text-decoration:none; text-align:center;">I'm a Player</a>
+    <a href="host.html" id="host-link" class="btn btn-secondary" style="text-decoration:none; text-align:center;">Host View</a>
+    <a href="display.html" id="display-link" class="btn btn-secondary" style="text-decoration:none; text-align:center;">Display View</a>
+  </div>
+</main>
+
+<script>
+  // Preserve ?game= param when navigating from landing page.
+  (function () {
+    const qs = window.location.search;
+    if (!qs) return;
+    ['player-link', 'host-link', 'display-link'].forEach(id => {
+      const a = document.getElementById(id);
+      if (a) a.href = a.getAttribute('href') + qs;
+    });
+  })();
+</script>
+
+<div class="footer">
+  AGP Financial Literacy &nbsp;|&nbsp; agpfinancialliteracy.com
+</div>
+</body>
+</html>

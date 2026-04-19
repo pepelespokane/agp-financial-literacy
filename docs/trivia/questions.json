@@ -1,0 +1,201 @@
+{
+  "title": "Your Money Playbook — Live Trivia",
+  "event": "Gonzaga Athletics",
+  "questions": [
+    {
+      "id": 1,
+      "topic": "Financial Literacy",
+      "question": "Which of these is the best definition of \"financial literacy\"?",
+      "options": [
+        "Being able to do math quickly in your head",
+        "Knowing how to earn, save, spend, borrow, and invest money wisely",
+        "Having a credit score above 800",
+        "Owning stocks"
+      ],
+      "correct": 1,
+      "explanation": "Financial literacy is the whole package of money skills — earning, saving, spending, borrowing, and investing — not a single metric."
+    },
+    {
+      "id": 2,
+      "topic": "Financial Goals",
+      "question": "Which of these is a SMART financial goal?",
+      "options": [
+        "\"I want to be rich someday\"",
+        "\"I want to save $1,500 for a summer trip by June 1st\"",
+        "\"I should probably start investing at some point\"",
+        "\"I'll save whatever's left at the end of the month\""
+      ],
+      "correct": 1,
+      "explanation": "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound. Vague wishes don't move your bank account."
+    },
+    {
+      "id": 3,
+      "topic": "Psychology of Money",
+      "question": "The average American sees approximately how many ads per year?",
+      "options": [
+        "15,000",
+        "150,000",
+        "About 1.5 million",
+        "15 million"
+      ],
+      "correct": 2,
+      "explanation": "Streaming, social feeds, billboards, TV, product placements, sponsorships — it all adds up to roughly 1.5M touchpoints per year. That constant pressure is a big reason \"wants\" quietly become \"needs.\""
+    },
+    {
+      "id": 4,
+      "topic": "Budgeting",
+      "question": "In the classic 50/30/20 budget, what goes in the 20%?",
+      "options": [
+        "Rent and groceries",
+        "Streaming services and eating out",
+        "Savings and debt repayment",
+        "Taxes"
+      ],
+      "correct": 2,
+      "explanation": "50% needs, 30% wants, 20% future-you (savings + debt payoff). The 20% is how you actually build wealth."
+    },
+    {
+      "id": 5,
+      "topic": "Budgeting",
+      "question": "What percentage of Americans have set a formal budget for 2026?",
+      "options": [
+        "21%",
+        "38%",
+        "53%",
+        "78%"
+      ],
+      "correct": 2,
+      "explanation": "Just over half of Americans have set a formal 2026 budget — up from 46% in 2025. Budgeting adoption is rising, but almost half of adults still wing it every month."
+    },
+    {
+      "id": 6,
+      "topic": "Budgeting",
+      "question": "What's the #1 reason people fail to stick to their budget?",
+      "options": [
+        "They don't make enough money",
+        "Unexpected \"emergency\" costs — medical bills, car repairs, etc.",
+        "Their rent is too high",
+        "Social media pressure"
+      ],
+      "correct": 1,
+      "explanation": "More than half of adults across every age group say surprise expenses are what actually derail their budget. This is exactly why an emergency fund matters — it absorbs the hit so your plan keeps working."
+    },
+    {
+      "id": 7,
+      "topic": "Psychology of Money",
+      "question": "\"Lifestyle creep\" is the tendency for your spending to…",
+      "options": [
+        "Stay flat no matter how much you earn",
+        "Rise as your income rises, so you save less than you expected",
+        "Drop automatically when you get a raise",
+        "Only grow around the holidays"
+      ],
+      "correct": 1,
+      "explanation": "As income grows, spending often grows with it. Lifestyle creep is why high earners sometimes still feel broke."
+    },
+    {
+      "id": 8,
+      "topic": "Saving",
+      "question": "How many months of living expenses should a solid emergency fund cover?",
+      "options": [
+        "1 month",
+        "2–3 months",
+        "3–6 months",
+        "12 months"
+      ],
+      "correct": 2,
+      "explanation": "3–6 months of essential expenses covers most real surprises — job loss, medical bills, car repair — without forcing you to tap credit cards or sell investments at a bad time."
+    },
+    {
+      "id": 9,
+      "topic": "Spending",
+      "question": "Which of these is MOST likely to quietly drain your bank account over a year WITHOUT you noticing?",
+      "options": [
+        "One $200 concert ticket",
+        "A $15 subscription you forgot about",
+        "A $40 dinner with friends",
+        "A $75 pair of shoes"
+      ],
+      "correct": 1,
+      "explanation": "The one-time purchases hurt once. A forgotten subscription hits every month forever — and most people have three to five of them."
+    },
+    {
+      "id": 10,
+      "topic": "Credit Cards",
+      "question": "What's the MOST important rule for managing a credit card?",
+      "options": [
+        "Always use the card with the highest rewards rate",
+        "Pay the minimum balance every month",
+        "Pay the full statement balance every month",
+        "Close old cards to protect your credit"
+      ],
+      "correct": 2,
+      "explanation": "Pay in full, every month, no exceptions. That's how you keep the rewards, build credit history, and avoid the 20%+ interest trap. Every other \"rule\" is a distant second."
+    },
+    {
+      "id": 11,
+      "topic": "Credit Cards",
+      "question": "What percentage of American credit cardholders DON'T pay their balance in full every month?",
+      "options": [
+        "About 15%",
+        "About 30%",
+        "About 48%",
+        "About 72%"
+      ],
+      "correct": 2,
+      "explanation": "Roughly half of Americans carry a balance month to month — paying interest on past purchases instead of keeping the rewards. The \"pay in full\" rule is simple; actually doing it puts you ahead of half the country."
+    },
+    {
+      "id": 12,
+      "topic": "Credit Scores",
+      "question": "Which factor has the BIGGEST impact on your credit score?",
+      "options": [
+        "The brand of credit card you have",
+        "Whether you pay your bills on time",
+        "How many credit cards you own",
+        "Your annual income"
+      ],
+      "correct": 1,
+      "explanation": "Payment history is about 35% of your FICO score — the single biggest lever. Income doesn't show up on your credit score at all."
+    },
+    {
+      "id": 13,
+      "topic": "Compounding Interest",
+      "question": "Who ends up with more money at 65 — Player A, who invests $100/month from age 25 to 35 and then STOPS, or Player B, who invests $100/month from age 35 until 65?",
+      "options": [
+        "Player A, even though she only invested for 10 years",
+        "Player B, he invested 3x as long",
+        "They tie",
+        "It depends on how high the fees are"
+      ],
+      "correct": 0,
+      "explanation": "Player A ends up with about $407K; Player B with about $226K. Starting early almost always beats saving more later. Time > amount."
+    },
+    {
+      "id": 14,
+      "topic": "Investing",
+      "question": "Why do most beginner investors start with an index fund instead of picking individual stocks?",
+      "options": [
+        "Index funds guarantee higher returns",
+        "They give you a slice of hundreds of companies at once, spreading risk",
+        "Only professional investors are allowed to buy individual stocks",
+        "Index funds are tax-free"
+      ],
+      "correct": 1,
+      "explanation": "An S&P 500 index fund owns 500 companies at once — if any one of them tanks, it barely moves your portfolio. Low fees + built-in diversification = why this is the default starting point."
+    },
+    {
+      "id": 15,
+      "topic": "NIL & Taxes",
+      "question": "A Gonzaga athlete who lives in California earns $10,000 from an NIL deal with a Spokane business. Washington has no state income tax. Does the athlete owe state tax on that money?",
+      "options": [
+        "No — the deal happened in Washington, and Washington has no income tax",
+        "Yes — California taxes its residents on ALL income, including money earned out of state",
+        "Only if the deal is over $25,000",
+        "Only federal tax applies to NIL"
+      ],
+      "correct": 1,
+      "explanation": "Your home state generally taxes all your income — even money you earn somewhere else. Most college athletes are still residents of their home state during school, so a California athlete owes CA state tax on that NIL deal even though Washington itself takes nothing."
+    }
+  ]
+}

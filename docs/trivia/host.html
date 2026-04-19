@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-gonzaga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Host — AGP Live Trivia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <img src="agp-logo-white.png" alt="AGP" style="height:28px;">
+    <span class="brand">Live Trivia — Host</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:14px;">
+    <div class="event" id="game-label">—</div>
+    <button id="reset-btn" class="reset-btn" title="Wipe players, answers, and reset to lobby">Reset Game</button>
+  </div>
+</header>
+
+<main class="wrap wrap-wide">
+
+  <!-- Lobby card -->
+  <div class="card" id="lobby-card">
+    <h2>Lobby</h2>
+    <div class="count-big" id="player-count">0</div>
+    <div class="count-label">Players joined</div>
+    <button id="start-btn" class="btn" style="max-width:320px; margin:12px auto 0;">Start Game</button>
+  </div>
+
+  <!-- Question control card -->
+  <div class="card hidden" id="question-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span class="q-number" id="q-number">Question 1 of 16</span>
+      <span class="phase-badge phase-answering" id="phase-badge">Answering</span>
+    </div>
+    <div class="q-topic" id="q-topic"></div>
+    <p class="q-text" id="q-text"></p>
+
+    <!-- Host timer -->
+    <div class="timer-wrap">
+      <div class="timer-bar-bg">
+        <div class="timer-bar" id="host-timer-bar" style="width:100%;"></div>
+      </div>
+      <div class="timer-row">
+        <span class="timer-seconds"><span id="host-timer-val">20</span>s</span>
+      </div>
+    </div>
+
+    <!-- Answer distribution -->
+    <ul class="dist-list" id="dist-list"></ul>
+
+    <!-- Explanation -->
+    <div class="explanation hidden" id="q-explanation"></div>
+
+    <!-- Controls -->
+    <div class="host-controls">
+      <button id="close-btn" class="btn">Close Answers</button>
+      <button id="results-btn" class="btn btn-secondary hidden">Show Results</button>
+      <button id="next-btn" class="btn hidden">Next Question</button>
+      <button id="end-btn" class="btn btn-secondary hidden">End Game</button>
+    </div>
+  </div>
+
+  <!-- Finished card -->
+  <div class="card hidden" id="finished-card">
+    <h2>Game Over</h2>
+    <p class="sub">Final scores are locked. Switch to the Display view for the leaderboard.</p>
+  </div>
+
+  <!-- Player list -->
+  <div class="card">
+    <h2>Players <span style="font-weight:400; color:var(--text-light); font-size:14px;" id="player-count-inline">(0)</span></h2>
+    <ul id="player-list" class="player-list"></ul>
+    <p class="sub" id="empty-msg" style="margin:10px 0 0;">Nobody has joined yet.</p>
+  </div>
+</main>
+
+<div class="footer">
+  AGP Financial Literacy &nbsp;|&nbsp; Host View
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/host.js"></script>
+</body>
+</html>
