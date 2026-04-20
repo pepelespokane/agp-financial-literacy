@@ -1,6 +1,6 @@
 // Player view — lobby, questions, countdown, answer elimination, scoring.
 
-console.log('%cplay.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%cplay.js v7 2026-04-19', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId, loadPlayerSession, formatScore } = window.AGP;
@@ -49,15 +49,15 @@ console.log('%cplay.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
   let timeClosed = false;           // has the 20s expired?
 
   const LETTERS = ['A', 'B', 'C', 'D'];
-  const TOTAL_TIME = 20;
+  const TOTAL_TIME = 25;
 
   // ── Point decay ─────────────────────────────────────────────────────────
-  // 0-3s: 1000 | 3-10s: 1000→500 | 10-15s: 500→250 | 15-20s: 250→1
+  // 0-8s: 1000 (reading window) | 8-15s: 1000→500 | 15-20s: 500→250 | 20-25s: 250→1
   function pointsForElapsed(seconds) {
-    if (seconds <= 3)  return 1000;
-    if (seconds <= 10) return Math.round(1000 - (seconds - 3) * (500 / 7));
-    if (seconds <= 15) return Math.round(500 - (seconds - 10) * (250 / 5));
-    if (seconds <= 20) return Math.round(250 - (seconds - 15) * (249 / 5));
+    if (seconds <= 8)  return 1000;
+    if (seconds <= 15) return Math.round(1000 - (seconds - 8) * (500 / 7));
+    if (seconds <= 20) return Math.round(500 - (seconds - 15) * (250 / 5));
+    if (seconds <= 25) return Math.round(250 - (seconds - 20) * (249 / 5));
     return 0;
   }
 

@@ -1,6 +1,6 @@
 // Host view — game control, timer, live answer distribution, scoring.
 
-console.log('%chost.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%chost.js v7 2026-04-19', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId } = window.AGP;
@@ -48,7 +48,7 @@ console.log('%chost.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
   let questionStartTime = null;
 
   const LETTERS = ['A', 'B', 'C', 'D'];
-  const TOTAL_TIME = 20;
+  const TOTAL_TIME = 25;
 
   // ── Load questions ──────────────────────────────────────────────────────
   async function loadQuestions() {

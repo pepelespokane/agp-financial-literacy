@@ -1,7 +1,7 @@
 // Display view — projected screen. Renders QR for joining, big question view,
 // live answered count, results distribution, running leaderboard, and final podium.
 
-console.log('%cdisplay.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%cdisplay.js v7 2026-04-19', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId, formatScore } = window.AGP;
@@ -50,7 +50,7 @@ console.log('%cdisplay.js v6 2026-04-19', 'color:#0af;font-weight:bold;');
   let lastScores = {}; // player_id → previous score for change highlighting
 
   const LETTERS = ['A', 'B', 'C', 'D'];
-  const TOTAL_TIME = 20;
+  const TOTAL_TIME = 25;
   const RESULTS_IDLE_MS = 30000;  // 30s in results phase → swap to full leaderboard
   let idleTimer = null;
 
