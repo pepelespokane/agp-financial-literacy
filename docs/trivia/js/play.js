@@ -1,6 +1,6 @@
 // Player view — lobby, questions, countdown, answer elimination, scoring.
 
-console.log('%cplay.js v7 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%cplay.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
 
 (function () {
   const { getGameId, loadPlayerSession, formatScore } = window.AGP;

@@ -1,9 +1,17 @@
 // Display view — projected screen. Renders QR for joining, big question view,
 // live answered count, results distribution, running leaderboard, and final podium.
 
-console.log('%cdisplay.js v7 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%cdisplay.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
 
 (function () {
+  // Host-key gate — same rationale as host.js.
+  const HOST_KEY = 'agp-trivia-h0st-9b7f4e2c';
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  if (urlKey !== HOST_KEY) {
+    document.body.innerHTML = '<main style="padding:60px 20px; text-align:center; font-family:system-ui, sans-serif; color:#1F2A38;"><h1 style="font-size:28px;">Access Restricted</h1><p style="font-size:16px; color:#556677;">This display page requires a valid host key.</p></main>';
+    return;
+  }
+
   const { getGameId, formatScore } = window.AGP;
   const gameId = getGameId();
 

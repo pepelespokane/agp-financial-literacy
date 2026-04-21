@@ -1,8 +1,18 @@
 // Host view — game control, timer, live answer distribution, scoring.
 
-console.log('%chost.js v7 2026-04-19', 'color:#0af;font-weight:bold;');
+console.log('%chost.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
 
 (function () {
+  // Host-key gate. Prevents random audience members from loading the control page
+  // just by guessing the URL. The QR code for players goes to join.html which has
+  // no key requirement, so this is invisible to athletes.
+  const HOST_KEY = 'agp-trivia-h0st-9b7f4e2c';
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  if (urlKey !== HOST_KEY) {
+    document.body.innerHTML = '<main style="padding:60px 20px; text-align:center; font-family:system-ui, sans-serif; color:#1F2A38;"><h1 style="font-size:28px;">Access Restricted</h1><p style="font-size:16px; color:#556677;">This control page requires a valid host key.</p></main>';
+    return;
+  }
+
   const { getGameId } = window.AGP;
   const gameId = getGameId();
 
