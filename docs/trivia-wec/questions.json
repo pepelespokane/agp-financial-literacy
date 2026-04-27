@@ -124,13 +124,13 @@
       "topic": "Spokane Geography",
       "question": "What is the highest natural point in Spokane County?",
       "options": [
+        "Abercrombie Mountain (7,308 ft)",
+        "Quartz Mountain (5,929 ft)",
         "Mt. Spokane (5,883 ft)",
-        "Mica Peak (5,205 ft)",
-        "Tower Mountain (5,128 ft)",
-        "Krell Hill (4,820 ft)"
+        "Mica Peak (5,205 ft)"
       ],
-      "correct": 0,
-      "explanation": "Mt. Spokane tops out at 5,883 feet. Mt. Spokane State Park is the largest state park in Washington at over 13,900 acres, and is home to one of only two ski areas in Washington owned by the state."
+      "correct": 2,
+      "explanation": "Mt. Spokane tops out at 5,883 feet — the highest point in Spokane County. Abercrombie (Pend Oreille County) and Quartz Mountain (Stevens County) are both taller, but they're outside Spokane County. Mt. Spokane State Park is the largest state park in Washington at over 13,900 acres."
     }
   ]
 }
