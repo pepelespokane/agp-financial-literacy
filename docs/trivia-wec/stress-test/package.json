@@ -1,0 +1,13 @@
+{
+  "name": "agp-trivia-stress-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simulator that spawns N fake trivia players to load-test the Supabase backend.",
+  "main": "simulate.js",
+  "scripts": {
+    "start": "node simulate.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

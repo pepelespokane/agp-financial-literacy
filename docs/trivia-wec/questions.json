@@ -1,0 +1,136 @@
+{
+  "title": "WEC Trivia",
+  "event": "Workforce Education Council",
+  "questions": [
+    {
+      "id": 1,
+      "topic": "Spokane Basics",
+      "question": "What is Spokane's official nickname?",
+      "options": [
+        "The Evergreen City",
+        "The Lilac City",
+        "Falls City",
+        "The Sun City"
+      ],
+      "correct": 1,
+      "explanation": "Spokane has been called \"The Lilac City\" since the early 1900s — lilacs thrive in the Inland Northwest climate. The annual Lilac Festival (since 1938) is one of the longest-running spring festivals in the U.S."
+    },
+    {
+      "id": 2,
+      "topic": "Spokane Basics",
+      "question": "Which river flows through downtown Spokane and over Spokane Falls?",
+      "options": [
+        "The Columbia River",
+        "The Snake River",
+        "The Spokane River",
+        "The Yakima River"
+      ],
+      "correct": 2,
+      "explanation": "The Spokane River runs 111 miles from Lake Coeur d'Alene in Idaho to the Columbia River in Washington — flowing through the heart of downtown Spokane and over the falls."
+    },
+    {
+      "id": 3,
+      "topic": "Spokane History",
+      "question": "What major international event did Spokane host in 1974?",
+      "options": [
+        "The Summer Olympics",
+        "The World's Fair (Expo '74)",
+        "The FIFA World Cup",
+        "The International Garden Festival"
+      ],
+      "correct": 1,
+      "explanation": "Expo '74 ran from May to November 1974 with the theme \"Celebrating Tomorrow's Fresh, New Environment.\" It transformed an old rail yard into what is now Riverfront Park, and remains the smallest U.S. city to ever host a World's Fair."
+    },
+    {
+      "id": 4,
+      "topic": "Spokane Falls",
+      "question": "Spokane Falls is one of the largest urban waterfalls in North America. What is the total drop in elevation across the falls?",
+      "options": [
+        "About 50 feet",
+        "About 100 feet",
+        "About 150 feet",
+        "About 250 feet"
+      ],
+      "correct": 2,
+      "explanation": "The total drop across the Upper and Lower Spokane Falls is approximately 146 feet, making it one of the highest-volume urban waterfalls in the U.S. — even bigger than Niagara during peak spring runoff."
+    },
+    {
+      "id": 5,
+      "topic": "Spokane Tribe",
+      "question": "The word \"Spokane\" comes from the Salish language. What is the most commonly cited translation?",
+      "options": [
+        "Place by the falls",
+        "Children of the Sun",
+        "Land of the salmon",
+        "People of the bear"
+      ],
+      "correct": 1,
+      "explanation": "\"Children of the Sun\" is the most widely accepted translation. The Spokane Tribe (sp̓q̓n̓iʔ) has lived along the Spokane River for thousands of years before European contact."
+    },
+    {
+      "id": 6,
+      "topic": "Spokane Landmarks",
+      "question": "Riverfront Park's iconic 155-foot clock tower is the only remaining piece of which historic structure?",
+      "options": [
+        "The original Davenport Hotel",
+        "The Old City Hall",
+        "The Great Northern Railway Depot",
+        "The Spokane Hotel"
+      ],
+      "correct": 2,
+      "explanation": "The clock tower was built in 1902 as part of the Great Northern Railway Depot. The depot itself was demolished to make way for Expo '74, but the tower was preserved as a centerpiece of the new Riverfront Park."
+    },
+    {
+      "id": 7,
+      "topic": "Spokane History",
+      "question": "What year was Spokane officially incorporated as a city?",
+      "options": [
+        "1858",
+        "1873",
+        "1881",
+        "1903"
+      ],
+      "correct": 2,
+      "explanation": "Spokane was incorporated as a city in 1881, originally named \"Spokane Falls.\" The \"Falls\" was dropped in 1891. A massive 1889 fire destroyed most of downtown, leading to a rebuild that defined the city's brick-and-stone architectural character."
+    },
+    {
+      "id": 8,
+      "topic": "Spokane Tribe",
+      "question": "The Spokane Tribe Reservation, established in 1881, is located primarily in which Washington county?",
+      "options": [
+        "Spokane County",
+        "Stevens County",
+        "Lincoln County",
+        "Pend Oreille County"
+      ],
+      "correct": 1,
+      "explanation": "The Spokane Indian Reservation is located in Stevens County, with tribal headquarters in Wellpinit. It covers about 159,000 acres on the west side of the Spokane River. The Tribe never signed a treaty with the U.S. government — the reservation was established by executive order."
+    },
+    {
+      "id": 9,
+      "topic": "Spokane Tribe & Salmon",
+      "question": "Which native salmon species was a vital food source for the Spokane Tribe but was effectively eliminated from the upper Spokane River after construction of Grand Coulee Dam (completed 1942)?",
+      "options": [
+        "Coho salmon",
+        "Chinook (King) salmon",
+        "Sockeye salmon",
+        "Pink salmon"
+      ],
+      "correct": 1,
+      "explanation": "Grand Coulee Dam blocked Chinook salmon migration past the dam, eliminating salmon runs that had sustained the Spokane Tribe for thousands of years. The Tribe never received compensation for the loss until a 2019 settlement. Reintroduction efforts are ongoing."
+    },
+    {
+      "id": 10,
+      "topic": "Spokane Geography",
+      "question": "What is the highest natural point in Spokane County?",
+      "options": [
+        "Mt. Spokane (5,883 ft)",
+        "Mica Peak (5,205 ft)",
+        "Tower Mountain (5,128 ft)",
+        "Krell Hill (4,820 ft)"
+      ],
+      "correct": 0,
+      "explanation": "Mt. Spokane tops out at 5,883 feet. Mt. Spokane State Park is the largest state park in Washington at over 13,900 acres, and is home to one of only two ski areas in Washington owned by the state."
+    }
+  ]
+}

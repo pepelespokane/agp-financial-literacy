@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-spokane-colleges">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Join — WEC Trivia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <div class="brand">Spokane Colleges</div>
+  <div class="event">WEC Trivia</div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <h1>Join the Game</h1>
+    <p class="sub">Enter your name and team to play. You'll answer Spokane trivia questions on your phone throughout the session.</p>
+
+    <form id="join-form">
+      <label for="name">First Name</label>
+      <input type="text" id="name" autocomplete="given-name" placeholder="Your first name" required maxlength="40">
+
+      <label for="sport">Department / Team</label>
+      <input type="text" id="sport" placeholder="e.g. Workforce, Student Services, Faculty" maxlength="40">
+
+      <button type="submit" class="btn" id="join-btn">Join Game</button>
+      <div id="status"></div>
+    </form>
+  </div>
+</main>
+
+<div class="footer">
+  AGP Financial Literacy &nbsp;|&nbsp; agpfinancialliteracy.com
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js?v=8"></script>
+<script src="js/utils.js?v=8"></script>
+<script src="js/join.js?v=8"></script>
+</body>
+</html>
