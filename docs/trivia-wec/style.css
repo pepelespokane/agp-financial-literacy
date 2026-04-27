@@ -330,6 +330,38 @@ input[type="text"]:focus, select:focus {
   opacity: 1;
 }
 
+/* Save status indicators on the player's selected answer button. */
+.answer-btn.selected { position: relative; }
+.answer-btn.selected::after {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+.answer-btn.saving::after {
+  content: '...';
+  color: var(--accent);
+  letter-spacing: 1px;
+  animation: saving-pulse 0.9s ease-in-out infinite;
+}
+.answer-btn.saved::after {
+  content: '✓';
+  color: var(--correct);
+  font-size: 22px;
+}
+.answer-btn.save-failed::after {
+  content: '⚠ retry';
+  color: var(--incorrect);
+  font-size: 13px;
+}
+@keyframes saving-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
 /* ── Explanation card ──────────────────────────────────────────────────── */
 .explanation {
   margin-top: 16px;

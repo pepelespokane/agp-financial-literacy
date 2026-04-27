@@ -218,34 +218,62 @@ console.log('%cplay.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
 
     const originalIdx = shuffleMap[displayIdx];
 
-    // Update button visuals
+    // Update button visuals — selected, with a "saving" indicator
     answerGrid.querySelectorAll('.answer-btn').forEach((btn, i) => {
       btn.classList.toggle('selected', i === displayIdx);
+      if (i !== displayIdx) {
+        btn.classList.remove('saving', 'saved', 'save-failed');
+      }
     });
+    const selectedBtn = document.getElementById('ans-' + displayIdx);
+    if (selectedBtn) {
+      selectedBtn.classList.add('saving');
+      selectedBtn.classList.remove('saved', 'save-failed');
+    }
 
     selectedOriginalIndex = originalIdx;
 
-    // Call the submit_answer RPC so submitted_at is set to server now() on
-    // BOTH insert AND update. A plain upsert would preserve the original
-    // submitted_at on updates — meaning changing your answer later would still
-    // be scored at your first-pick time. The RPC explicitly refreshes it.
+    // Call the submit_answer RPC with retry-on-failure. Each tap fires a fresh
+    // attempt — if the player taps a different answer mid-retry, the new tap
+    // wins (selectedOriginalIndex check at line 318ish guards stale callbacks).
     const isCorrect = originalIdx === q.correct;
+    submitAnswerWithRetry(q.id, originalIdx, isCorrect, displayIdx, 3);
+  }
+
+  function submitAnswerWithRetry(questionId, originalIdx, isCorrect, displayIdx, attemptsLeft) {
     sb.rpc('submit_answer', {
       p_game_id: gameId,
       p_player_id: playerId,
-      p_question_id: q.id,
+      p_question_id: questionId,
       p_answer_index: originalIdx,
       p_is_correct: isCorrect,
     }).then(({ error }) => {
+      // If the player has since changed their pick (or moved past this Q), bail.
+      if (currentQId !== questionId || selectedOriginalIndex !== originalIdx) {
+        return;
+      }
+      const btn = document.getElementById('ans-' + displayIdx);
       if (error) {
-        console.error('submit_answer RPC error:', error);
-        const flash = document.getElementById('points-flash');
-        if (flash) {
-          flash.textContent = 'Answer save failed: ' + (error.message || 'check connection');
-          flash.className = 'points-flash zero';
+        console.error('submit_answer RPC error:', error, 'attempts left:', attemptsLeft - 1);
+        if (attemptsLeft > 1) {
+          setTimeout(() => submitAnswerWithRetry(questionId, originalIdx, isCorrect, displayIdx, attemptsLeft - 1), 250);
+        } else {
+          if (btn) {
+            btn.classList.remove('saving', 'saved');
+            btn.classList.add('save-failed');
+          }
+          const flash = document.getElementById('points-flash');
+          if (flash) {
+            flash.textContent = 'Answer save failed: ' + (error.message || 'check connection');
+            flash.className = 'points-flash zero';
+          }
         }
       } else {
-        console.log('Answer saved:', { question_id: q.id, answer_index: originalIdx, is_correct: isCorrect });
+        console.log('Answer saved:', { question_id: questionId, answer_index: originalIdx, is_correct: isCorrect });
+        if (btn) {
+          btn.classList.remove('saving', 'save-failed');
+          btn.classList.add('saved');
+        }
       }
     });
   }
