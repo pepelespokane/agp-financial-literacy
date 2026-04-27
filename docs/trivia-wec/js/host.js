@@ -62,7 +62,7 @@ console.log('%chost.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
 
   // ── Load questions ──────────────────────────────────────────────────────
   async function loadQuestions() {
-    const resp = await fetch('questions.json');
+    const resp = await fetch('questions.json?v=' + Date.now(), { cache: 'no-store' });
     const data = await resp.json();
     questions = data.questions;
   }
