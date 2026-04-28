@@ -1,0 +1,84 @@
+{
+  "title": "Spokane Trivia — Day 2",
+  "event": "HCA Instructor Retreat",
+  "questions": [
+    {
+      "id": 1,
+      "topic": "Spokane History",
+      "question": "What is Spokane's longstanding nickname, inspired by a flower that thrives in its climate?",
+      "options": [
+        "The Rose City",
+        "The Lilac City",
+        "The Tulip Capital",
+        "The Garden City"
+      ],
+      "correct": 1,
+      "explanation": "Spokane has been known as \"The Lilac City\" since the early 1900s. The annual Lilac Festival has been held every May since 1938."
+    },
+    {
+      "id": 2,
+      "topic": "Spokane History",
+      "question": "Spokane's downtown was rebuilt with stone and brick after which 1889 disaster?",
+      "options": [
+        "The Spokane Falls Flood of 1889",
+        "The Great Spokane Fire of 1889",
+        "The Cannon Hill Earthquake of 1889",
+        "The Inland Empire Tornado of 1889"
+      ],
+      "correct": 1,
+      "explanation": "The Great Spokane Fire of August 4, 1889 destroyed 32 blocks of the downtown business district. The city rebuilt with stone and brick — much of which still stands today."
+    },
+    {
+      "id": 3,
+      "topic": "Spokane History",
+      "question": "Expo '74 in Spokane was the first World's Fair in history to officially focus on which theme?",
+      "options": [
+        "Space exploration",
+        "The environment",
+        "Industrial technology",
+        "Transportation"
+      ],
+      "correct": 1,
+      "explanation": "Expo '74's official theme was \"Celebrating Tomorrow's Fresh, New Environment\" — the first environmentally themed World's Fair. Riverfront Park was created from the fair site after it ended."
+    },
+    {
+      "id": 4,
+      "topic": "Spokane Culture, Music & Food",
+      "question": "What annual 7.46-mile Spokane road race draws roughly 50,000 participants on the first Sunday of May?",
+      "options": [
+        "Spokane River Run",
+        "Bloomsday",
+        "Lilac Run",
+        "Centennial Run"
+      ],
+      "correct": 1,
+      "explanation": "Bloomsday was started in 1977 by Olympic marathoner Don Kardong. It's one of the largest timed road races in the world."
+    },
+    {
+      "id": 5,
+      "topic": "Spokane Culture, Music & Food",
+      "question": "Which annual Spokane event held the last weekend of June is billed as the world's largest 3-on-3 basketball tournament?",
+      "options": [
+        "Spokane Slam",
+        "Hoopfest",
+        "Inland Hoops",
+        "Spokane Open"
+      ],
+      "correct": 1,
+      "explanation": "Hoopfest takes over 45+ blocks of downtown Spokane every year with thousands of teams. It's been running since 1990."
+    },
+    {
+      "id": 6,
+      "topic": "Spokane Culture, Music & Food",
+      "question": "Spokane's beloved Frank's Diner — a popular breakfast spot — is housed inside what kind of converted historic vehicle?",
+      "options": [
+        "A 1940s passenger bus",
+        "A 1906 railroad dining car",
+        "A streetcar",
+        "A vintage trolley"
+      ],
+      "correct": 1,
+      "explanation": "Frank's Diner is built inside a 1906 Northern Pacific railroad observation car — one of only a handful still serving as a working diner anywhere in the country."
+    }
+  ]
+}
