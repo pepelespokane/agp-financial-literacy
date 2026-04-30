@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-spokane-colleges">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Display — HCA Retreat Trivia</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="display.css">
+</head>
+<body class="display-body">
+
+<header class="display-header">
+  <div class="display-header-left" style="display:flex; align-items:center; gap:14px;">
+    <img src="spokane-colleges-icon.png" alt="Spokane Colleges" style="height:54px;">
+    <span class="display-brand" style="font-size: 26px; font-weight: 700;">Spokane Colleges</span>
+  </div>
+  <div class="display-header-right">
+    <span class="display-event" id="event-label">HCA Instructor Retreat</span>
+  </div>
+</header>
+
+<main class="display-main">
+
+  <!-- Lobby view: QR + join URL + player list -->
+  <section class="display-card hidden" id="lobby-view">
+    <div class="lobby-grid">
+      <div class="lobby-left">
+        <img src="spokane-colleges-logo.png" alt="Spokane Colleges" style="height:160px; margin:0 auto 18px; display:block;">
+        <div class="lobby-kicker">Join the game</div>
+        <h1 class="lobby-h1">Scan &amp; play</h1>
+        <div class="lobby-qr-wrap" id="qr-wrap"></div>
+      </div>
+      <div class="lobby-right">
+        <div class="lobby-count-label">Players in</div>
+        <div class="lobby-count" id="lobby-count">0</div>
+        <ul class="lobby-players" id="lobby-players"></ul>
+        <div class="lobby-empty" id="lobby-empty">Waiting for players…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game layout: question (left 75%) + leaderboard column (right 25%).
+       When in 'full-leaderboard' mode, the question collapses and the
+       leaderboard takes 100% width. -->
+  <div class="game-layout hidden" id="game-layout">
+    <section class="display-card game-question" id="question-view">
+      <div class="q-header">
+        <span class="q-pill" id="q-topic">Topic</span>
+        <span class="q-counter" id="q-counter">Q1 / 16</span>
+      </div>
+      <h1 class="q-big" id="q-text">Question</h1>
+
+      <div class="d-timer-wrap">
+        <div class="d-timer-bar-bg">
+          <div class="d-timer-bar" id="d-timer-bar" style="width:100%;"></div>
+        </div>
+        <div class="d-timer-val"><span id="d-timer-seconds">20</span><span class="d-timer-s">s</span></div>
+      </div>
+
+      <div class="d-options" id="d-options"></div>
+
+      <div class="d-answered-line">
+        <span class="d-answered-count"><span id="d-answered-num">0</span> / <span id="d-answered-total">0</span></span>
+        <span class="d-answered-label">answered</span>
+      </div>
+
+      <div class="d-explain hidden" id="d-explain"></div>
+    </section>
+
+    <aside class="leaderboard" id="leaderboard">
+      <div class="lb-title" id="lb-title">Top 10</div>
+      <ol class="lb-list" id="lb-list"></ol>
+    </aside>
+  </div>
+
+  <!-- Finished view: podium + leaderboard -->
+  <section class="display-card hidden" id="finished-view">
+    <div class="final-kicker">Final Results</div>
+    <h1 class="final-h1">HCA Trivia Champions</h1>
+    <div class="podium" id="podium"></div>
+    <ol class="final-list" id="final-list"></ol>
+  </section>
+
+</main>
+
+<div class="display-footer">
+  Spokane Colleges &nbsp;|&nbsp; HCA Instructor Retreat &nbsp;|&nbsp; spokanecolleges.edu
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="js/supabase-client.js?v=10"></script>
+<script src="js/utils.js?v=10"></script>
+<script src="js/display.js?v=10"></script>
+</body>
+</html>

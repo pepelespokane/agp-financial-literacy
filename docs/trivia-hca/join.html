@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-spokane-colleges">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Join — HCA Retreat Trivia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <img src="spokane-colleges-icon.png" alt="Spokane Colleges" style="height:32px; margin-right:10px;">
+  <div class="brand">Spokane Colleges</div>
+  <div class="event">HCA Instructor Retreat</div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <h1>Join the Game</h1>
+    <p class="sub">Enter your name and hometown to play. You'll answer Spokane trivia questions on your phone throughout the session.</p>
+
+    <form id="join-form">
+      <label for="name">First Name</label>
+      <input type="text" id="name" autocomplete="given-name" placeholder="Your first name" required maxlength="40">
+
+      <label for="sport">Hometown</label>
+      <input type="text" id="sport" placeholder="e.g. Spokane, Yakima, Tri-Cities" maxlength="40">
+
+      <button type="submit" class="btn" id="join-btn">Join Game</button>
+      <div id="status"></div>
+    </form>
+  </div>
+</main>
+
+<div class="footer">
+  Spokane Colleges &nbsp;|&nbsp; HCA Instructor Retreat
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js?v=10"></script>
+<script src="js/utils.js?v=10"></script>
+<script src="js/join.js?v=10"></script>
+</body>
+</html>

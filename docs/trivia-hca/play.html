@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-spokane-colleges">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Play — HCA Retreat Trivia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <img src="spokane-colleges-icon.png" alt="Spokane Colleges" style="height:32px; margin-right:10px;">
+  <div class="brand">Spokane Colleges</div>
+  <div class="event" id="event-label">HCA Instructor Retreat</div>
+</header>
+
+<!-- Score bar (visible once game is active) -->
+<div class="score-bar hidden" id="score-bar">
+  <span id="score-name">—</span>
+  <span id="rank-val" style="opacity:0.85;"></span>
+  <span>Score: <span class="score-val" id="score-val">0</span></span>
+</div>
+
+<main class="wrap">
+
+  <!-- Waiting / lobby card -->
+  <div class="card" id="waiting-card">
+    <h1 id="greeting">Hang tight!</h1>
+    <p class="sub waiting-pulse" id="waiting-msg">You're in the lobby. The game will start when the host is ready.</p>
+    <div class="count-big" id="player-count">—</div>
+    <div class="count-label">Players in the room</div>
+  </div>
+
+  <!-- Question card -->
+  <div class="card hidden" id="question-card">
+    <span class="q-number" id="q-number">Question 1 of 16</span>
+    <div class="q-topic" id="q-topic"></div>
+    <p class="q-text" id="q-text"></p>
+
+    <!-- Timer -->
+    <div class="timer-wrap" id="timer-wrap">
+      <div class="timer-bar-bg">
+        <div class="timer-bar" id="timer-bar" style="width:100%;"></div>
+      </div>
+      <div class="timer-row">
+        <span class="timer-seconds"><span id="timer-val">20</span>s</span>
+        <span class="timer-points" id="points-avail">1,000 pts</span>
+      </div>
+    </div>
+
+    <div class="answer-grid" id="answer-grid"></div>
+
+    <!-- Results (shown when host reveals) -->
+    <div class="hidden" id="results-section">
+      <div class="points-flash" id="points-flash"></div>
+      <div class="explanation" id="q-explanation"></div>
+    </div>
+  </div>
+
+  <!-- Finished card -->
+  <div class="card hidden" id="finished-card">
+    <h1>Game Over!</h1>
+    <p class="sub">Thanks for playing. Check the screen for final results.</p>
+    <div class="count-big" id="final-score">0</div>
+    <div class="count-label">Your final score</div>
+  </div>
+
+</main>
+
+<div class="footer">
+  Spokane Colleges &nbsp;|&nbsp; HCA Instructor Retreat &nbsp;|&nbsp; <span id="js-version">v9</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js?v=10"></script>
+<script src="js/utils.js?v=10"></script>
+<script src="js/play.js?v=10"></script>
+</body>
+</html>
