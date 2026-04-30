@@ -61,8 +61,13 @@ console.log('%chost.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
   const TOTAL_TIME = 25;
 
   // ── Load questions ──────────────────────────────────────────────────────
+  // Per-game file first (questions-{gameId}.json), fall back to questions.json.
   async function loadQuestions() {
-    const resp = await fetch('questions.json?v=' + Date.now(), { cache: 'no-store' });
+    const v = Date.now();
+    let resp = await fetch(`questions-${gameId}.json?v=${v}`, { cache: 'no-store' });
+    if (!resp.ok) {
+      resp = await fetch('questions.json?v=' + v, { cache: 'no-store' });
+    }
     const data = await resp.json();
     questions = data.questions;
   }

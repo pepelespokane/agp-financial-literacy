@@ -81,7 +81,12 @@ console.log('%cplay.js v8 2026-04-21', 'color:#0af;font-weight:bold;');
 
   async function init() {
     // Cache-bust so a stale questions.json doesn't produce wrong is_correct values.
-    const resp = await fetch('questions.json?v=' + Date.now(), { cache: 'no-store' });
+    // Per-game file first (questions-{gameId}.json), fall back to questions.json.
+    const v = Date.now();
+    let resp = await fetch(`questions-${gameId}.json?v=${v}`, { cache: 'no-store' });
+    if (!resp.ok) {
+      resp = await fetch('questions.json?v=' + v, { cache: 'no-store' });
+    }
     const data = await resp.json();
     questions = data.questions;
 
