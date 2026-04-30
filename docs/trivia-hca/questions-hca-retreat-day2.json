@@ -8,11 +8,11 @@
       "question": "What is Spokane's longstanding nickname, inspired by a flower that thrives in its climate?",
       "options": [
         "The Rose City",
-        "The Lilac City",
         "The Tulip Capital",
+        "The Lilac City",
         "The Garden City"
       ],
-      "correct": 1,
+      "correct": 2,
       "explanation": "Spokane has been known as \"The Lilac City\" since the early 1900s. The annual Lilac Festival has been held every May since 1938."
     },
     {
@@ -20,12 +20,12 @@
       "topic": "Spokane History",
       "question": "Spokane's downtown was rebuilt with stone and brick after which 1889 disaster?",
       "options": [
-        "The Spokane Falls Flood of 1889",
         "The Great Spokane Fire of 1889",
+        "The Spokane Falls Flood of 1889",
         "The Cannon Hill Earthquake of 1889",
         "The Inland Empire Tornado of 1889"
       ],
-      "correct": 1,
+      "correct": 0,
       "explanation": "The Great Spokane Fire of August 4, 1889 destroyed 32 blocks of the downtown business district. The city rebuilt with stone and brick — much of which still stands today."
     },
     {
@@ -34,11 +34,11 @@
       "question": "Expo '74 in Spokane was the first World's Fair in history to officially focus on which theme?",
       "options": [
         "Space exploration",
-        "The environment",
         "Industrial technology",
-        "Transportation"
+        "Transportation",
+        "The environment"
       ],
-      "correct": 1,
+      "correct": 3,
       "explanation": "Expo '74's official theme was \"Celebrating Tomorrow's Fresh, New Environment\" — the first environmentally themed World's Fair. Riverfront Park was created from the fair site after it ended."
     },
     {
@@ -60,11 +60,11 @@
       "question": "Which annual Spokane event held the last weekend of June is billed as the world's largest 3-on-3 basketball tournament?",
       "options": [
         "Spokane Slam",
-        "Hoopfest",
         "Inland Hoops",
+        "Hoopfest",
         "Spokane Open"
       ],
-      "correct": 1,
+      "correct": 2,
       "explanation": "Hoopfest takes over 45+ blocks of downtown Spokane every year with thousands of teams. It's been running since 1990."
     },
     {

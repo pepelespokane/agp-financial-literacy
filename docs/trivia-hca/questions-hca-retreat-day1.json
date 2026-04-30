@@ -7,12 +7,12 @@
       "topic": "Famous Spokane People",
       "question": "Which legendary singer and Oscar-winning actor of \"White Christmas\" fame grew up in Spokane and attended Gonzaga University?",
       "options": [
-        "Frank Sinatra",
         "Bing Crosby",
-        "Dean Martin",
-        "Perry Como"
+        "Frank Sinatra",
+        "Perry Como",
+        "Dean Martin"
       ],
-      "correct": 1,
+      "correct": 0,
       "explanation": "Bing Crosby grew up in Spokane after moving there at age 4, and attended Gonzaga University. The Bing Crosby House Museum is on the Gonzaga campus today."
     },
     {
@@ -21,11 +21,11 @@
       "question": "Which Hollywood actress, known for HBO's \"Euphoria\" and the 2023 film \"Anyone But You,\" was born in Spokane in 1997?",
       "options": [
         "Margot Robbie",
-        "Sydney Sweeney",
         "Florence Pugh",
-        "Anya Taylor-Joy"
+        "Anya Taylor-Joy",
+        "Sydney Sweeney"
       ],
-      "correct": 1,
+      "correct": 3,
       "explanation": "Sydney Sweeney was born in Spokane on September 12, 1997 and grew up in the Spokane / North Idaho area before pursuing acting."
     },
     {
@@ -34,11 +34,11 @@
       "question": "Which Hall of Fame second baseman, who spent most of his MLB career with the Chicago Cubs, was born in Spokane in 1959?",
       "options": [
         "Cal Ripken Jr.",
-        "Wade Boggs",
         "Ryne Sandberg",
+        "Wade Boggs",
         "Robin Yount"
       ],
-      "correct": 2,
+      "correct": 1,
       "explanation": "Ryne Sandberg was born in Spokane on September 18, 1959, and was inducted into the Baseball Hall of Fame in 2005 after a career spent mostly with the Chicago Cubs."
     },
     {
@@ -46,12 +46,12 @@
       "topic": "Spokane Colleges & Universities",
       "question": "What is the athletic nickname of Gonzaga University, also affectionately shortened to \"Zags\"?",
       "options": [
-        "Bulldogs",
         "Bears",
         "Pioneers",
+        "Bulldogs",
         "Eagles"
       ],
-      "correct": 0,
+      "correct": 2,
       "explanation": "Gonzaga's teams are the Bulldogs, often shortened to \"Zags.\" Their costumed mascot is named Spike."
     },
     {
@@ -59,12 +59,12 @@
       "topic": "Spokane Colleges & Universities",
       "question": "Eastern Washington University's Roos Field in Cheney is famous for what unusual feature?",
       "options": [
-        "A retractable roof",
         "Bright red turf",
+        "A retractable roof",
         "A heated playing surface",
         "Underground locker rooms"
       ],
-      "correct": 1,
+      "correct": 0,
       "explanation": "Roos Field, nicknamed \"The Inferno,\" was the first non-green football field in NCAA history when EWU installed its bright red turf in 2010."
     },
     {
@@ -73,11 +73,11 @@
       "question": "The Community Colleges of Spokane recently rebranded their Sasquatch athletic mascot in early 2025. What is the mascot's official name?",
       "options": [
         "Squatch",
-        "Skitch",
         "Sass",
-        "Stomper"
+        "Stomper",
+        "Skitch"
       ],
-      "correct": 1,
+      "correct": 3,
       "explanation": "Skitch the Sasquatch is the official mascot of Community Colleges of Spokane (Spokane Community College and Spokane Falls Community College). The 2025 rebrand replaced the old Bigfoot footprint logo with a fierce Sasquatch face."
     },
     {
@@ -99,11 +99,11 @@
       "question": "Spokane's Manito Park — now famous for its Japanese Garden and Duncan Garden — was originally home to what feature that closed in 1932?",
       "options": [
         "A horse racing track",
-        "A zoo",
         "An amusement park",
+        "A zoo",
         "A baseball stadium"
       ],
-      "correct": 1,
+      "correct": 2,
       "explanation": "Manito Park housed a small zoo from the early 1900s until 1932, when it was closed during the Great Depression. The animals were sold or transferred, and the park was redeveloped into the gardens we know today."
     },
     {
@@ -111,12 +111,12 @@
       "topic": "Spokane Geography & Landmarks",
       "question": "The Riverfront Park Clock Tower is the only surviving piece of which Spokane structure, demolished in 1973 to clear the site for Expo '74?",
       "options": [
+        "The Great Northern Railway Depot",
         "The Davenport Hotel",
         "The Auditorium Theater",
-        "The Great Northern Railway Depot",
         "City Hall"
       ],
-      "correct": 2,
+      "correct": 0,
       "explanation": "The 155-foot Clock Tower is all that remains of the Great Northern Railway Depot, demolished in 1973 to clear the site for Expo '74. The tower was preserved as a centerpiece of the new Riverfront Park."
     }
   ]
