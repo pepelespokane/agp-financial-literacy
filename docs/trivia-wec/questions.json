@@ -8,12 +8,12 @@
       "question": "What is Spokane's official nickname?",
       "options": [
         "The Evergreen City",
-        "The Lilac City",
+        "Sun City",
         "Falls City",
-        "The Sun City"
+        "The Lilac City"
       ],
-      "correct": 1,
-      "explanation": "Spokane has been called \"The Lilac City\" since the early 1900s — lilacs thrive in the Inland Northwest climate. The annual Lilac Festival (since 1938) is one of the longest-running spring festivals in the U.S."
+      "correct": 3,
+      "explanation": "Spokane has been called \"The Lilac City\" since the early 1900s \u00e2\u20ac\u201d lilacs thrive in the Inland Northwest climate. The annual Lilac Festival (since 1938) is one of the longest-running spring festivals in the U.S."
     },
     {
       "id": 2,
@@ -26,19 +26,19 @@
         "Amazon"
       ],
       "correct": 0,
-      "explanation": "Providence Health Services is the largest employer in Spokane County, with over 8,000 employees across its hospitals and clinics — including Sacred Heart Medical Center & Children's Hospital. Fairchild Air Force Base employs roughly 2,900 (about 2,200 active-duty Air Force personnel plus 700 civilians)."
+      "explanation": "Providence Health Services is the largest employer in Spokane County, with over 8,000 employees across its hospitals and clinics \u00e2\u20ac\u201d including Sacred Heart Medical Center & Children's Hospital. Fairchild Air Force Base employs roughly 2,900 (about 2,200 active-duty Air Force personnel plus 700 civilians)."
     },
     {
       "id": 3,
       "topic": "Spokane History",
       "question": "What major international event did Spokane host in 1974?",
       "options": [
-        "The Summer Olympics",
         "The World's Fair (Expo '74)",
+        "The Summer Olympics",
         "The FIFA World Cup",
         "The International Garden Festival"
       ],
-      "correct": 1,
+      "correct": 0,
       "explanation": "Expo '74 ran from May to November 1974 with the theme \"Celebrating Tomorrow's Fresh, New Environment.\" It transformed an old rail yard into what is now Riverfront Park, and remains the smallest U.S. city to ever host a World's Fair."
     },
     {
@@ -52,7 +52,7 @@
         "About 250 feet"
       ],
       "correct": 2,
-      "explanation": "The total drop across the Upper and Lower Spokane Falls is approximately 146 feet, making it one of the highest-volume urban waterfalls in the U.S. — even bigger than Niagara during peak spring runoff."
+      "explanation": "The total drop across the Upper and Lower Spokane Falls is approximately 146 feet, making it one of the highest-volume urban waterfalls in the U.S. \u00e2\u20ac\u201d even bigger than Niagara during peak spring runoff."
     },
     {
       "id": 5,
@@ -65,7 +65,7 @@
         "People of the bear"
       ],
       "correct": 1,
-      "explanation": "\"Children of the Sun\" is the most widely accepted translation. The Spokane Tribe (sp̓q̓n̓iʔ) has lived along the Spokane River for thousands of years before European contact."
+      "explanation": "\"Children of the Sun\" is the most widely accepted translation. The Spokane Tribe (sp\u00cc\u201cq\u00cc\u201cn\u00cc\u201ci\u00ca\u201d) has lived along the Spokane River for thousands of years before European contact."
     },
     {
       "id": 6,
@@ -86,11 +86,11 @@
       "question": "Which industry sector employs the most people in the Spokane region?",
       "options": [
         "Manufacturing",
-        "Health Care & Social Assistance",
         "Retail Trade",
-        "Education"
+        "Education",
+        "Health Care & Social Assistance"
       ],
-      "correct": 1,
+      "correct": 3,
       "explanation": "Health Care & Social Assistance is the #1 employment sector in Spokane, accounting for roughly 1 in 5 jobs in the region. Spokane serves as the medical hub for the Inland Northwest, drawing patients from eastern Washington, North Idaho, western Montana, and parts of Oregon."
     },
     {
@@ -98,13 +98,13 @@
       "topic": "Spokane Tribe",
       "question": "The Spokane Tribe Reservation, established in 1881, is located primarily in which Washington county?",
       "options": [
-        "Spokane County",
         "Stevens County",
+        "Spokane County",
         "Lincoln County",
         "Pend Oreille County"
       ],
-      "correct": 1,
-      "explanation": "The Spokane Indian Reservation is located in Stevens County, with tribal headquarters in Wellpinit. It covers about 159,000 acres on the west side of the Spokane River. The Tribe never signed a treaty with the U.S. government — the reservation was established by executive order."
+      "correct": 0,
+      "explanation": "The Spokane Indian Reservation is located in Stevens County, with tribal headquarters in Wellpinit. It covers about 159,000 acres on the west side of the Spokane River. The Tribe never signed a treaty with the U.S. government \u00e2\u20ac\u201d the reservation was established by executive order."
     },
     {
       "id": 9,
@@ -126,11 +126,11 @@
       "options": [
         "Abercrombie Mountain (7,308 ft)",
         "Quartz Mountain (5,929 ft)",
-        "Mt. Spokane (5,883 ft)",
+        "Mt. Spokane (5,887 ft)",
         "Mica Peak (5,205 ft)"
       ],
       "correct": 2,
-      "explanation": "Mt. Spokane tops out at 5,883 feet — the highest point in Spokane County. Abercrombie (Pend Oreille County) and Quartz Mountain (Stevens County) are both taller, but they're outside Spokane County. Mt. Spokane State Park is the largest state park in Washington at over 13,900 acres."
+      "explanation": "Mt. Spokane tops out at 5,887 feet \u2014 the highest point in Spokane County. Abercrombie (Pend Oreille County) and Quartz Mountain (Stevens County) are both taller, but they're outside Spokane County. Mt. Spokane State Park is the largest state park in Washington at over 13,900 acres."
     }
   ]
 }
