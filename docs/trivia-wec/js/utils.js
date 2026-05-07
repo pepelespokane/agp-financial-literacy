@@ -1,9 +1,9 @@
 // Small shared helpers.
 
-// Read ?game=XYZ from the URL. Defaults to the live Gonzaga game.
+// Read ?game=XYZ from the URL. Defaults to the live WEC game (5/7/26).
 function getGameId() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('game') || 'gonzaga-2026-04-20';
+  return params.get('game') || 'wec-2026-05-07';
 }
 
 // Local session storage for player identity (name, sport, player_id).
