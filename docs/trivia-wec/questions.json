@@ -25,8 +25,8 @@
         "Spokane Public Schools",
         "Amazon"
       ],
-      "correct": 1,
-      "explanation": "Fairchild Air Force Base employs roughly 8,000 people total — about 5,000 active-duty Air Force personnel and 3,000 civilian employees and contractors. Providence Health Care is the largest private employer at around 7,500."
+      "correct": 0,
+      "explanation": "Providence Health Services is the largest employer in Spokane County, with over 8,000 employees across its hospitals and clinics — including Sacred Heart Medical Center & Children's Hospital. Fairchild Air Force Base employs roughly 2,900 (about 2,200 active-duty Air Force personnel plus 700 civilians)."
     },
     {
       "id": 3,
