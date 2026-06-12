@@ -1,0 +1,15 @@
+# SAFETY GUARDRAIL — this repo is PUBLIC (GitHub Pages).
+# Default to ignoring EVERYTHING, then explicitly allow only the
+# files that are meant to be public (the website + the trivia apps).
+# This makes it impossible for a stray `git add -A` to push sensitive
+# business files (Financials, Customer Contracts, client lists, memory,
+# notes, etc.) to the public repo. Those files stay on disk, untouched —
+# they're just invisible to git.
+
+# Ignore all top-level entries by default
+/*
+
+# ...but allow the public website, the trivia apps, and this file
+!/.gitignore
+!/docs/
+!/Trivia/
