@@ -1,0 +1,227 @@
+:root{
+  --primary:#10243F;
+  --primary-2:#1B3A5C;
+  --accent:#1FB57A;
+  --ink:#16202E;
+  --muted:#5C6B7A;
+  --line:#E1E7EF;
+  --bg:#F4F6F9;
+  --card:#FFFFFF;
+  --ok:#16A34A;
+  --warn:#D97706;
+  --bad:#DC2626;
+  --tax:#64748B;
+  --exp:#3B82F6;
+  --emg:#F59E0B;
+  --inv:#16A34A;
+  --fun:#A855F7;
+  --radius:14px;
+  --shadow:0 2px 10px rgba(16,36,63,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.45;
+  min-height:100vh;display:flex;flex-direction:column;
+}
+img{max-width:100%}
+
+/* header */
+.hdr{
+  background:var(--primary);color:#fff;display:flex;align-items:center;gap:12px;
+  padding:12px 16px;position:sticky;top:0;z-index:20;box-shadow:var(--shadow);
+}
+.hdr-logo{height:30px;width:auto}
+.hdr-title{display:flex;flex-direction:column;line-height:1.1}
+.hdr-main{font-weight:700;font-size:16px}
+.hdr-sub{font-size:12px;opacity:.85;font-weight:600;letter-spacing:.02em}
+
+/* layout */
+.wrap{flex:1;width:100%;max-width:560px;margin:0 auto;padding:18px 16px 40px}
+.foot{max-width:560px;margin:0 auto;padding:14px 16px 26px;font-size:11px;color:var(--muted);text-align:center}
+
+.screen{animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h1.title{font-size:24px;line-height:1.2;margin:6px 0 6px}
+.lede{color:var(--muted);font-size:15px;margin:0 0 18px}
+.step-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.card h3{margin:0 0 4px;font-size:16px}
+.card p.sub{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+
+/* inputs */
+label.fld{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+.hint{font-size:12.5px;color:var(--muted);margin:3px 0 0}
+input[type=text],input[type=number]{
+  width:100%;font-size:16px;padding:12px 12px;border:1.5px solid var(--line);
+  border-radius:10px;background:#fff;color:var(--ink);outline:none;
+}
+input:focus{border-color:var(--accent)}
+.money-in{position:relative}
+.money-in::before{content:"$";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600}
+.money-in input{padding-left:24px}
+
+.inc-controls{display:flex;gap:8px;align-items:stretch}
+.inc-controls .money-in{flex:1}
+select.freq{font-size:15px;padding:11px 8px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);outline:none;max-width:48%}
+select.freq:focus{border-color:var(--accent)}
+.inc-mo{font-size:12.5px;color:var(--accent);font-weight:700;margin:4px 2px 0;text-align:right;min-height:14px}
+
+.check{display:flex;align-items:center;gap:10px;margin:14px 0 2px;font-size:14.5px;font-weight:600;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+
+/* buttons */
+.btn{
+  display:block;width:100%;text-align:center;font-size:16px;font-weight:700;
+  padding:14px;border:none;border-radius:12px;cursor:pointer;
+  background:var(--accent);color:#06301f;margin-top:8px;
+}
+.btn:active{transform:translateY(1px)}
+.btn.secondary{background:#fff;color:var(--primary);border:1.5px solid var(--line)}
+.btn.dark{background:var(--primary);color:#fff}
+.btn.ghost{background:transparent;color:var(--muted);box-shadow:none;font-weight:600;font-size:14px;padding:10px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btnrow{display:flex;gap:10px}
+.btnrow .btn{margin-top:0}
+
+/* allocate: income banner + counter */
+.pool{
+  background:var(--primary);color:#fff;border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);
+}
+.pool .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.05em;opacity:.8}
+.pool .amt{font-size:22px;font-weight:800}
+.counter{
+  position:sticky;top:56px;z-index:15;background:#fff;border:1.5px solid var(--line);
+  border-radius:12px;padding:10px 14px;margin-bottom:14px;box-shadow:var(--shadow);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.counter .lbl{font-size:13px;font-weight:600;color:var(--muted)}
+.counter .val{font-size:19px;font-weight:800}
+.counter.ok .val{color:var(--ok)}
+.counter.over .val{color:var(--bad)}
+.counter.under .val{color:var(--warn)}
+
+/* bucket cards */
+.bucket{
+  background:#fff;border:1px solid var(--line);border-left:6px solid var(--b,#ccc);
+  border-radius:12px;padding:12px 14px;margin-bottom:11px;box-shadow:var(--shadow);
+}
+.bucket .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bucket .name{font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:8px}
+.bucket .dot{width:11px;height:11px;border-radius:50%;background:var(--b)}
+.bucket .desc{font-size:12.5px;color:var(--muted);margin:3px 0 0}
+.bucket .amtbox{width:118px;flex:none}
+.bucket .amtbox .money-in input{padding:9px 9px 9px 22px;font-weight:700;text-align:right}
+.bucket .more{margin-top:9px;display:flex;align-items:center;justify-content:space-between}
+.bucket .more a{color:var(--accent);font-weight:700;font-size:13px;text-decoration:none;cursor:pointer}
+.bucket .pct{font-size:12px;color:var(--muted);font-weight:600}
+
+/* overlay sheet */
+.overlay{position:fixed;inset:0;background:rgba(10,20,35,.5);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+.overlay.hidden{display:none}
+.sheet{
+  background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px 16px 24px;
+  max-height:88vh;overflow-y:auto;animation:slideup .25s ease;
+}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+.sheet h2{margin:0 0 4px;font-size:19px}
+.sheet .sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.sheet .close{float:right;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;padding:2px 6px}
+
+/* line items (expenses) */
+.li{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.li .li-name{flex:1;font-size:14px;font-weight:600}
+.li .li-amt{width:110px;flex:none}
+.li .li-name-input{flex:1;min-width:0;font-size:14px;padding:9px 8px;border:1.5px solid var(--line);border-radius:8px;color:var(--ink);outline:none}
+.li .li-name-input:focus{border-color:var(--accent)}
+.li .li-del{color:var(--bad);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;flex:none}
+.li .li-amt .money-in input{padding:9px 9px 9px 22px;text-align:right}
+.subtotal{display:flex;justify-content:space-between;font-weight:800;font-size:16px;border-top:1.5px solid var(--line);padding-top:12px;margin-top:6px}
+
+/* callouts */
+.callout{background:#F0F9F4;border:1px solid #CDEBD9;border-radius:12px;padding:12px 14px;font-size:13.5px;margin:12px 0}
+.callout.warn{background:#FEF6E7;border-color:#F6DFB0}
+.callout.tax{background:#F1F5F9;border-color:#DBE3EC}
+.disclaimer{background:#FDEEEC;border:1.5px solid #E9A79D;border-radius:10px;padding:11px 13px;font-size:12.8px;line-height:1.4;color:#8A2C1E;font-weight:600;margin:12px 0}
+.callout b{color:var(--ink)}
+.big-figure{font-size:26px;font-weight:800;color:var(--accent);margin:6px 0}
+
+/* summary */
+.sum-hero{background:var(--primary);color:#fff;border-radius:var(--radius);padding:18px;text-align:center;margin-bottom:14px}
+.sum-hero .big{font-size:30px;font-weight:800;margin:4px 0}
+.sum-hero .cap{font-size:12.5px;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
+.bar{display:flex;height:18px;border-radius:9px;overflow:hidden;margin:8px 0 14px;border:1px solid var(--line)}
+.bar span{display:block;height:100%}
+.sum-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.sum-row:last-child{border-bottom:none}
+.sum-row .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.sum-row .nm{flex:1;font-weight:600;font-size:14.5px}
+.sum-row .vl{font-weight:800;font-size:15px}
+.sum-row .pc{width:44px;text-align:right;color:var(--muted);font-size:12.5px;font-weight:600}
+.goal-chip{background:#EEF6FF;border:1px solid #CFE4FA;color:#1E4E79;border-radius:10px;padding:10px 12px;font-size:13.5px;margin:12px 0;font-weight:600}
+.coach{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;display:flex;gap:9px;align-items:flex-start;box-shadow:var(--shadow)}
+.coach .ic{font-size:16px;line-height:1.3}
+.coach.good{border-left:5px solid var(--ok)}
+.coach.flag{border-left:5px solid var(--warn)}
+
+.progress{display:flex;gap:5px;margin:0 0 16px}
+.progress i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.progress i.on{background:var(--accent)}
+
+/* ============ Game of Life specific ============ */
+.gsteps{display:flex;gap:6px;margin:0 0 16px}
+.gsteps span{flex:1;text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding-bottom:6px;border-bottom:3px solid var(--line)}
+.gsteps span.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* scenario card */
+.scen-card{background:var(--primary);color:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.scen-tag{font-size:11px;letter-spacing:.08em;font-weight:700;opacity:.7}
+.scen-job{font-size:26px;font-weight:800;margin:2px 0 12px}
+.scen-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.14);font-size:14px}
+.scen-row span{opacity:.85}
+.scen-hero{margin-top:14px;text-align:center}
+.scen-hero>span{font-size:12px;opacity:.8;text-transform:uppercase;letter-spacing:.04em}
+.scen-mo{font-size:30px;font-weight:800;margin:2px 0}
+.scen-note{display:block;font-size:12px;opacity:.7}
+
+/* build chips */
+.cgroup{margin-bottom:14px}
+.cgroup-t{font-weight:700;font-size:14.5px;margin-bottom:7px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:9px 12px;cursor:pointer;min-width:calc(50% - 4px);flex:1}
+.chip .chip-l{font-size:13.5px;font-weight:600;color:var(--ink);text-align:left}
+.chip .chip-c{font-size:12.5px;color:var(--muted);font-weight:700}
+.chip.sel{border-color:var(--accent);background:#F0FBF6}
+.chip.sel .chip-c{color:var(--ok)}
+
+.autobox{background:#F1F5F9;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 14px}
+.autobox-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px}
+.auto-row{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0}
+
+/* dice */
+.dice{width:80px;height:80px;margin:6px auto 12px;border-radius:16px;background:var(--primary);color:#fff;font-size:40px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+
+/* crystal ball cards */
+.cball-back{background:linear-gradient(135deg,#2A3C5E,#10243F);color:#fff;border-radius:14px;padding:26px 16px;text-align:center;font-weight:700;opacity:.9;margin:6px 0 14px}
+.cball{border-radius:14px;padding:14px 16px;margin:0 0 10px;box-shadow:var(--shadow);border-left:6px solid}
+.cball.good{background:#F0FBF6;border-color:var(--ok)}
+.cball.bad{background:#FDEEEC;border-color:var(--bad)}
+.cball-t{font-weight:700;font-size:15px}
+.cball-e{font-size:13.5px;font-weight:700;margin-top:3px;color:var(--muted)}
+.cball-lesson{font-size:12.5px;font-style:italic;color:var(--ink);margin-top:6px;opacity:.85}
+
+/* leaderboard */
+.lbrd{margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.lb-row{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--line);font-size:13.5px}
+.lb-row:last-child{border-bottom:none}
+.lb-row.me{background:#F0FBF6}
+.lb-rank{width:20px;font-weight:800;color:var(--muted);text-align:center}
+.lb-name{flex:1;font-weight:700;display:flex;flex-direction:column;line-height:1.15}
+.lb-name small{font-weight:500;color:var(--muted);font-size:11px}
+.lb-rate{font-weight:800;color:var(--ok);width:44px;text-align:right}
+.lb-nest{width:78px;text-align:right;font-weight:600;color:var(--muted);font-size:12px}
