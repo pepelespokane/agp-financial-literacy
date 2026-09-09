@@ -32,7 +32,7 @@
   var state = {
     screen: "welcome",
     goal: "",
-    income: { stipend: { amt: 0, freq: "monthly" }, nil: { amt: 0, freq: "monthly" }, job: { amt: 0, freq: "monthly" }, family: { amt: 0, freq: "monthly" }, other: { amt: 0, freq: "monthly" } },
+    income: { stipend: { amt: 0, freq: "monthly" }, revshare: { amt: 0, freq: "monthly" }, nil: { amt: 0, freq: "monthly" }, job: { amt: 0, freq: "monthly" }, family: { amt: 0, freq: "monthly" }, other: { amt: 0, freq: "monthly" } },
     buckets: { tax: 0, expenses: 0, emergency: 0, investing: 0, fun: 0 },
     expenseItems: { rent: 0, phone: 0, groceries: 0, eatingout: 0, transport: 0, subs: 0, other: 0 },
     customExpenses: [],
@@ -63,7 +63,7 @@
   function reset() {
     localStorage.removeItem(KEY);
     state.screen = "welcome"; state.goal = ""; state.favMemory = ""; state.memoryRevealed = false;
-    state.income = { stipend: { amt: 0, freq: "monthly" }, nil: { amt: 0, freq: "monthly" }, job: { amt: 0, freq: "monthly" }, family: { amt: 0, freq: "monthly" }, other: { amt: 0, freq: "monthly" } };
+    state.income = { stipend: { amt: 0, freq: "monthly" }, revshare: { amt: 0, freq: "monthly" }, nil: { amt: 0, freq: "monthly" }, job: { amt: 0, freq: "monthly" }, family: { amt: 0, freq: "monthly" }, other: { amt: 0, freq: "monthly" } };
     state.buckets = { tax: 0, expenses: 0, emergency: 0, investing: 0, fun: 0 };
     state.expenseItems = { rent: 0, phone: 0, groceries: 0, eatingout: 0, transport: 0, subs: 0, other: 0 };
     state.customExpenses = [];
@@ -90,10 +90,14 @@
   var FREQ_PM = {};
   FREQS.forEach(function (f) { FREQ_PM[f.k] = f.pm; });
   function toMonthly(src) { return src ? num(src.amt) * (FREQ_PM[src.freq] || 1) : 0; }
-  function nilMonthly() { return toMonthly(state.income.nil); }
+  function revshareMonthly() { return toMonthly(state.income.revshare); }
+  function otherNilMonthly() { return toMonthly(state.income.nil); }
+  // Revenue sharing and outside NIL normally both arrive with nothing withheld,
+  // so both drive the Taxes bucket. Combined here for the set-aside math.
+  function nilMonthly() { return revshareMonthly() + otherNilMonthly(); }
   function totalIncome() { return Object.keys(state.income).reduce(function (t, k) { return t + toMonthly(state.income[k]); }, 0); }
   function hasNil() { return nilMonthly() > 0; }
-  // Estimated total set-aside (self-employment + federal income tax) by annual NIL level. Editable.
+  // Estimated total set-aside (self-employment + federal income tax) by annual revenue-sharing + NIL level. Editable.
   var TAX_LEVELS = [
     { label: "Below $16,100",        pct: 0.15 },
     { label: "$16,100 to $50,000",   pct: 0.22 },
@@ -192,13 +196,17 @@
           '<h1 class="title">What money do you have coming in?</h1>' +
           '<p class="lede">It is important to understand how much money is paid into your account each month. Select how often you are paid and how much to calculate your monthly income.</p>' +
           incRow("stipend", "Scholarship / Stipend / Cost of Attendance", i.stipend) +
-          incRow("nil", "NIL income", i.nil) +
+          incRow("revshare", "NIL / Revenue Sharing from Your Program", i.revshare) +
+          incRow("nil", "Other NIL", i.nil) +
           incRow("job", "Part-time job", i.job) +
           incRow("family", "Family help", i.family) +
           incRow("other", "Anything else", i.other) +
           '<div class="pool" style="margin-top:16px"><span class="lbl">Monthly income</span><span class="amt" id="incTotal">' + money(totalIncome()) + '</span></div>' +
           '<div class="callout tax" id="nilNote" style="' + (hasNil() ? "" : "display:none") + '">' +
-            '<b>Heads up on NIL.</b> NIL income has no taxes taken out, so a Taxes bucket will show up next. You will need to set aside some of it for taxes, and we will help you figure out how much.' +
+            '<b>Heads up on NIL and revenue sharing.</b> These are two different kinds of money and it helps to track them apart. ' +
+            'Revenue sharing comes from your school. Other NIL comes from deals you sign yourself, and it is usually less predictable. ' +
+            'Neither one normally has taxes taken out for you, so a Taxes bucket will show up next and we will help you size it. ' +
+            '<b>One thing to check:</b> some schools do withhold on revenue sharing. Ask yours what is already taken out so you do not set aside twice.' +
           '</div>' +
           '<button class="btn" id="next">Continue</button>' +
           '<button class="btn ghost" id="back">Back</button>' +
@@ -317,7 +325,7 @@
     if (idx < 0) return "Pick your level above and we will estimate what to set aside each month.";
     var p = Math.round(TAX_LEVELS[idx].pct * 100);
     return "At this level, set aside about <b>" + p + "%</b> for taxes. On your <b>" + money(mo) +
-           "</b> a month of NIL, that is about <b>" + money(taxSetAside(idx, mo)) + "</b> a month.";
+           "</b> a month of revenue sharing and NIL, that is about <b>" + money(taxSetAside(idx, mo)) + "</b> a month.";
   }
   function taxSheet() {
     var mo = nilMonthly();
@@ -325,8 +333,8 @@
     var opts = '<option value="-1">Select your level...</option>' + TAX_LEVELS.map(function (l, i) {
       return '<option value="' + i + '"' + (idx === i ? " selected" : "") + '>' + l.label + '</option>';
     }).join("");
-    var node = el('<div>' + sheetHead("Taxes", "NIL and other 1099 income has no taxes withheld, so you set your own aside. How much depends on how much you make, so tell us your level.") +
-      '<label class="fld" for="nilLevel">Your total NIL income for the year</label>' +
+    var node = el('<div>' + sheetHead("Taxes", "Revenue sharing, NIL and other 1099 income usually arrive with no taxes withheld, so you set your own aside. How much depends on how much you make, so tell us your level.") +
+      '<label class="fld" for="nilLevel">Your total revenue sharing plus NIL for the year</label>' +
       '<select class="freq" id="nilLevel" style="width:100%;max-width:100%">' + opts + '</select>' +
       '<div class="callout tax" id="taxCalc">' + taxCalcMsg(idx, mo) + '</div>' +
       '<div class="disclaimer">This is an estimate, not exactly what you will owe. It does not include state taxes, and your real bill depends on your full situation. Always consult a CPA or tax professional.</div>' +
@@ -528,7 +536,7 @@
     if (hasNil()) {
       var target = state.nilLevelIdx >= 0 ? taxSetAside(state.nilLevelIdx, nilMonthly()) : nilMonthly() * 0.15;
       if (num(b.tax) < target * 0.9)
-        out.push({ type: "flag", ic: "&#129534;", msg: "Your Taxes bucket looks light for your NIL income. Open the Taxes details, pick your income level, and set aside the estimated amount so tax season is not a surprise." });
+        out.push({ type: "flag", ic: "&#129534;", msg: "Your Taxes bucket looks light for your revenue sharing and NIL income. Open the Taxes details, pick your income level, and set aside the estimated amount so tax season is not a surprise." });
     }
 
     if (num(b.emergency) <= 0)
