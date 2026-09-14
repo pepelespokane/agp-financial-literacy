@@ -1,5 +1,5 @@
 /* AGP - Build Your Budget (bucket model)
-   Self-contained, no backend. Runs on the athlete's phone, saves to localStorage.
+   Self-contained, no backend. Runs on the athlete's device, saves to localStorage.
    Per-school branding via ?school= param. QR-able as a standalone activity.
    No em dashes in any user-facing copy. */
 
@@ -604,7 +604,7 @@
         '<div class="coach"><span class="ic">&#128202;</span><span>For reference, a common guideline is 50% needs, 30% wants, 20% saving. Your Emergency plus Investing is <b>' + savingPct + '%</b> of income.</span></div>' +
         '<div class="card" style="text-align:center">' +
           '<h3>Nice work. You have a plan.</h3>' +
-          '<p class="sub">Screenshot this so it is on your phone. Run it for 30 days, then adjust.</p>' +
+          '<p class="sub">Screenshot this so you have it on your device. Run it for 30 days, then adjust.</p>' +
           '<a class="btn dark" href="https://calendar.app.google/SQV7d9eK7hsu2rLm8" target="_blank" rel="noopener">Book a free 1-on-1</a>' +
           '<button class="btn secondary" id="edit">Adjust my buckets</button>' +
           '<button class="btn ghost" id="reset">Start over</button>' +
@@ -614,7 +614,7 @@
           '<p class="sub">Nothing you entered was sent anywhere. It is saved in this browser, on this device only, so you can come back to it. ' +
             '<b>AGP never sees your numbers.</b></p>' +
           '<button class="btn ghost danger" id="wipe">Clear my data from this device</button>' +
-          '<p class="hint">On a borrowed or shared phone? Tap this before you hand it back.</p>' +
+          '<p class="hint">On a borrowed or shared device? Tap this before you hand it back.</p>' +
         '</div>' +
       '</div>'
     ));
