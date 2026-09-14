@@ -143,6 +143,12 @@ select.freq:focus{border-color:var(--accent)}
 .li .li-amt .money-in input{padding:9px 9px 9px 22px;text-align:right}
 .subtotal{display:flex;justify-content:space-between;font-weight:800;font-size:16px;border-top:1.5px solid var(--line);padding-top:12px;margin-top:6px}
 
+/* withholding checkbox */
+.checkrow{margin:8px 0 4px}
+.checkrow label{display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13.5px;font-weight:600;line-height:1.35}
+.checkrow input[type=checkbox]{flex:0 0 auto;width:18px;height:18px;margin:1px 0 0;accent-color:var(--accent);cursor:pointer}
+.checkrow .sub{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:3px}
+
 /* callouts */
 .callout{background:#F0F9F4;border:1px solid #CDEBD9;border-radius:12px;padding:12px 14px;font-size:13.5px;margin:12px 0}
 .callout.warn{background:#FEF6E7;border-color:#F6DFB0}

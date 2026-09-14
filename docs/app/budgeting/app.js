@@ -38,6 +38,7 @@
     customExpenses: [],
     emergencyTarget: 1000,
     nilLevelIdx: -1,
+    revshareWithheld: false,
     favMemory: "",
     memoryRevealed: false
   };
@@ -69,6 +70,7 @@
     state.customExpenses = [];
     state.emergencyTarget = 1000;
     state.nilLevelIdx = -1;
+    state.revshareWithheld = false;
     render();
   }
 
@@ -95,6 +97,11 @@
   // Revenue sharing and outside NIL normally both arrive with nothing withheld,
   // so both drive the Taxes bucket. Combined here for the set-aside math.
   function nilMonthly() { return revshareMonthly() + otherNilMonthly(); }
+  // Some schools withhold taxes on revenue sharing. When they do, that money is
+  // already taxed and must not be set aside twice, so it drops out of the base.
+  // The bracket level is still chosen on TOTAL income, because total income sets the rate.
+  function revshareIsWithheld() { return !!state.revshareWithheld && revshareMonthly() > 0; }
+  function taxableNilMonthly() { return (revshareIsWithheld() ? 0 : revshareMonthly()) + otherNilMonthly(); }
   function totalIncome() { return Object.keys(state.income).reduce(function (t, k) { return t + toMonthly(state.income[k]); }, 0); }
   function hasNil() { return nilMonthly() > 0; }
   // Estimated total set-aside (self-employment + federal income tax) by annual revenue-sharing + NIL level. Editable.
@@ -122,13 +129,29 @@
   function go(screen) { state.screen = screen; save(); render(); window.scrollTo(0, 0); }
 
   var BUCKETS = [
-    { key: "tax",       name: "Taxes",         color: "var(--tax)", desc: "Set aside for what you owe. This was never really yours.", nilOnly: true },
+    { key: "tax",       name: "Taxes",         color: "var(--tax)", desc: "Set aside for what you owe. This was never really yours." },
     { key: "expenses",  name: "Expenses",      color: "var(--exp)", desc: "Your needs: housing, phone, food, transport." },
     { key: "emergency", name: "Emergency Fund",color: "var(--emg)", desc: "A cushion so one surprise is not a crisis." },
     { key: "investing", name: "Investing",     color: "var(--inv)", desc: "Pay yourself first. Future you says thanks." },
     { key: "fun",       name: "Fun",           color: "var(--fun)", desc: "Guilt-free spending on what you enjoy." }
   ];
   function activeBuckets() { return BUCKETS.filter(function (b) { return !b.nilOnly || hasNil(); }); }
+
+  // Which tax situation the athlete is in. The Taxes bucket always shows, because
+  // knowing the bucket exists matters even in the years it is empty.
+  function withheldJobMonthly() { return toMonthly(state.income.job); }
+  function taxSituation() {
+    if (taxableNilMonthly() > 0) return "setaside";   // untaxed money arriving, size the bucket
+    if (revshareIsWithheld()) return "withheld";      // school already takes it out
+    return "none";                                    // no untaxed money entered
+  }
+  function bucketDesc(b) {
+    if (b.key !== "tax") return b.desc;
+    var sit = taxSituation();
+    if (sit === "setaside") return b.desc;
+    if (sit === "withheld") return "Your school already takes this out. Tap to check it is enough.";
+    return "Nothing to set aside right now. Tap to see when that changes.";
+  }
 
   /* ---------------- render ---------------- */
   var app = document.getElementById("app");
@@ -197,6 +220,14 @@
           '<p class="lede">It is important to understand how much money is paid into your account each month. Select how often you are paid and how much to calculate your monthly income.</p>' +
           incRow("stipend", "Scholarship / Stipend / Cost of Attendance", i.stipend) +
           incRow("revshare", "NIL / Revenue Sharing from Your Program", i.revshare) +
+          '<div class="checkrow" id="withholdRow" style="' + (revshareMonthly() > 0 ? "" : "display:none") + '">' +
+            '<label for="revshareWithheld">' +
+              '<input type="checkbox" id="revshareWithheld"' + (state.revshareWithheld ? " checked" : "") + '>' +
+              '<span>My school already takes taxes out of this' +
+                '<span class="sub">Check with your business office if you are not sure. If they withhold, you do not set this money aside again.</span>' +
+              '</span>' +
+            '</label>' +
+          '</div>' +
           incRow("nil", "Other NIL", i.nil) +
           incRow("job", "Part-time job", i.job) +
           incRow("family", "Family help", i.family) +
@@ -206,7 +237,7 @@
             '<b>Heads up on NIL and revenue sharing.</b> These are two different kinds of money and it helps to track them apart. ' +
             'Revenue sharing comes from your school. Other NIL comes from deals you sign yourself, and it is usually less predictable. ' +
             'Neither one normally has taxes taken out for you, so a Taxes bucket will show up next and we will help you size it. ' +
-            '<b>One thing to check:</b> some schools do withhold on revenue sharing. Ask yours what is already taken out so you do not set aside twice.' +
+            '<b>One thing to check:</b> some schools do withhold on revenue sharing. Ask yours what is already taken out, and tick the box above if they do, so you do not set aside twice.' +
           '</div>' +
           '<button class="btn" id="next">Continue</button>' +
           '<button class="btn ghost" id="back">Back</button>' +
@@ -222,10 +253,15 @@
         document.getElementById("inc_" + k + "_mo").textContent = monthlyLabel(state.income[k]);
         document.getElementById("incTotal").textContent = money(totalIncome());
         document.getElementById("nilNote").style.display = hasNil() ? "" : "none";
+        document.getElementById("withholdRow").style.display = revshareMonthly() > 0 ? "" : "none";
         save();
       }
       amt.addEventListener("input", upd);
       freq.addEventListener("change", upd);
+    });
+    document.getElementById("revshareWithheld").addEventListener("change", function () {
+      state.revshareWithheld = this.checked;
+      save();
     });
     document.getElementById("next").onclick = function () {
       if (totalIncome() <= 0) { alert("Add at least one income source to keep going."); return; }
@@ -254,7 +290,7 @@
     var bucketHtml = activeBuckets().map(function (b) {
       return '<div class="bucket" style="--b:' + b.color + '">' +
         '<div class="top">' +
-          '<div><div class="name"><span class="dot"></span>' + b.name + '</div><div class="desc">' + b.desc + '</div></div>' +
+          '<div><div class="name"><span class="dot"></span>' + b.name + '</div><div class="desc">' + bucketDesc(b) + '</div></div>' +
           '<div class="amtbox"><div class="money-in"><input type="number" inputmode="decimal" id="bk_' + b.key + '" placeholder="0" value="' + (state.buckets[b.key] ? state.buckets[b.key] : "") + '"></div></div>' +
         '</div>' +
         '<div class="more"><a data-drill="' + b.key + '">Details and tips</a><span class="pct" id="pct_' + b.key + '">' + pct(num(state.buckets[b.key])) + '% of income</span></div>' +
@@ -321,40 +357,88 @@
     Array.prototype.forEach.call(node.querySelectorAll("[data-close]"), function (c) { c.onclick = closeSheet; });
   }
 
-  function taxCalcMsg(idx, mo) {
+  function taxCalcMsg(idx) {
     if (idx < 0) return "Pick your level above and we will estimate what to set aside each month.";
+    var base = taxableNilMonthly();
     var p = Math.round(TAX_LEVELS[idx].pct * 100);
-    return "At this level, set aside about <b>" + p + "%</b> for taxes. On your <b>" + money(mo) +
-           "</b> a month of revenue sharing and NIL, that is about <b>" + money(taxSetAside(idx, mo)) + "</b> a month.";
+    if (revshareIsWithheld()) {
+      if (base <= 0) {
+        return "Your school already withholds on your revenue sharing, and that is the only untaxed money you entered, so there is <b>nothing extra to set aside</b>. " +
+               "Worth confirming with your business office that the amount they withhold is enough, because the rate at your level is about <b>" + p + "%</b>.";
+      }
+      return "Your school already withholds on your revenue sharing, so that part is handled. " +
+             "At your level the rate is about <b>" + p + "%</b>, applied to the <b>" + money(base) +
+             "</b> a month of other NIL that arrives untaxed. That is about <b>" + money(taxSetAside(idx, base)) + "</b> a month.";
+    }
+    return "At this level, set aside about <b>" + p + "%</b> for taxes. On your <b>" + money(base) +
+           "</b> a month of revenue sharing and NIL, that is about <b>" + money(taxSetAside(idx, base)) + "</b> a month.";
   }
+  // Shown when no untaxed money was entered. The bucket is empty, and the reason
+  // is worth teaching: a paycheck is already taxed, a scholarship may not be.
+  function taxSheetNoNil() {
+    var hasJob = withheldJobMonthly() > 0;
+    var html = '<div>' + sheetHead("Taxes",
+      "Nothing to set aside right now, and it is worth knowing why. This bucket is here so you recognize it the moment it does apply to you.") +
+      '<div class="callout tax">' +
+        '<b>Why this bucket is empty.</b> A Taxes bucket is for money that shows up with <b>no taxes taken out yet</b>, which means it is not all yours to spend. ' +
+        'Based on what you entered, you do not have money like that coming in right now.' +
+      '</div>';
+    if (hasJob) {
+      html += '<div class="callout"><b>Your part-time job is already handled.</b> You still owe tax on that paycheck, but your employer takes it out before you get paid. ' +
+        'The amount that lands in your account is what is left after taxes, so there is nothing extra to set aside. ' +
+        'That is the difference: a job withholds for you, NIL does not.</div>';
+    }
+    html += '<div class="callout warn"><b>One thing worth asking about.</b> Scholarship money that pays tuition and required fees is treated differently from money you receive for living costs like room, board and travel. ' +
+      'Depending on your situation, part of a stipend or cost of attendance check can be taxable even though nothing was withheld. ' +
+      'It is a fair question for your business office or a tax professional, and most athletes never think to ask it.</div>' +
+      '<div class="callout tax"><b>When this bucket turns on.</b> Sign an NIL deal, start getting revenue sharing, or get paid as a contractor rather than an employee, and this money arrives untaxed. ' +
+      'Come back to this screen, add it on the income step, and we will help you size the set-aside.</div>' +
+      '<div class="disclaimer">This is general education, not tax advice, and everyone’s situation is different. Always consult a CPA or tax professional.</div>' +
+      '<button class="btn secondary" data-close>Got it</button></div>';
+    var node = el(html);
+    wireClose(node);
+    return node;
+  }
+
   function taxSheet() {
-    var mo = nilMonthly();
+    if (taxSituation() === "none") return taxSheetNoNil();
     var idx = (typeof state.nilLevelIdx === "number") ? state.nilLevelIdx : -1;
+    function setAside(i) { return taxSetAside(i, taxableNilMonthly()); }
+    function useLabel(i) {
+      if (i < 0) return "Select a level first";
+      if (revshareIsWithheld() && taxableNilMonthly() <= 0) return "Nothing to set aside";
+      return "Use " + money(setAside(i));
+    }
+    function useDisabled(i) { return i < 0 || (revshareIsWithheld() && taxableNilMonthly() <= 0); }
     var opts = '<option value="-1">Select your level...</option>' + TAX_LEVELS.map(function (l, i) {
       return '<option value="' + i + '"' + (idx === i ? " selected" : "") + '>' + l.label + '</option>';
     }).join("");
-    var node = el('<div>' + sheetHead("Taxes", "Revenue sharing, NIL and other 1099 income usually arrive with no taxes withheld, so you set your own aside. How much depends on how much you make, so tell us your level.") +
+    var allWithheld = revshareIsWithheld() && taxableNilMonthly() <= 0;
+    var node = el('<div>' + sheetHead("Taxes", allWithheld
+        ? "Your school withholds on your revenue sharing, so this bucket is already being handled for you. Pick your level below to check that what they take out is in the right range."
+        : "Revenue sharing, NIL and other 1099 income usually arrive with no taxes withheld, so you set your own aside. How much depends on how much you make, so tell us your level.") +
       '<label class="fld" for="nilLevel">Your total revenue sharing plus NIL for the year</label>' +
+      '<p class="hint">Use your total, even if your school withholds on part of it. Your total income is what sets the rate.</p>' +
       '<select class="freq" id="nilLevel" style="width:100%;max-width:100%">' + opts + '</select>' +
-      '<div class="callout tax" id="taxCalc">' + taxCalcMsg(idx, mo) + '</div>' +
+      '<div class="callout tax" id="taxCalc">' + taxCalcMsg(idx) + '</div>' +
       '<div class="disclaimer">This is an estimate, not exactly what you will owe. It does not include state taxes, and your real bill depends on your full situation. Always consult a CPA or tax professional.</div>' +
-      '<p class="hint">Keep the money in a separate account so you are not tempted to spend it.</p>' +
-      '<button class="btn" id="taxUse"' + (idx < 0 ? " disabled" : "") + '>' + (idx < 0 ? "Select a level first" : "Use " + money(taxSetAside(idx, mo))) + '</button>' +
+      (allWithheld ? "" : '<p class="hint">Keep the money in a separate account so you are not tempted to spend it.</p>') +
+      '<button class="btn" id="taxUse"' + (useDisabled(idx) ? " disabled" : "") + '>' + useLabel(idx) + '</button>' +
       '<button class="btn secondary" data-close>Done</button></div>');
     var sel = node.querySelector("#nilLevel");
     sel.addEventListener("change", function () {
       state.nilLevelIdx = parseInt(this.value, 10);
       save();
       var i = state.nilLevelIdx;
-      node.querySelector("#taxCalc").innerHTML = taxCalcMsg(i, mo);
+      node.querySelector("#taxCalc").innerHTML = taxCalcMsg(i);
       var btn = node.querySelector("#taxUse");
-      btn.textContent = i < 0 ? "Select a level first" : "Use " + money(taxSetAside(i, mo));
-      btn.disabled = i < 0;
+      btn.textContent = useLabel(i);
+      btn.disabled = useDisabled(i);
     });
     node.querySelector("#taxUse").onclick = function () {
       var i = state.nilLevelIdx;
-      if (i < 0) return;
-      state.buckets.tax = taxSetAside(i, mo);
+      if (useDisabled(i)) return;
+      state.buckets.tax = setAside(i);
       save(); closeSheet();
     };
     wireClose(node);
@@ -533,8 +617,9 @@
     else if (left < -1) out.push({ type: "flag", ic: "&#9888;&#65039;", msg: "You are <b>" + money(-left) + "</b> over your income. Something has to come down, usually the Fun or Expenses bucket." });
     else out.push({ type: "good", ic: "&#9989;", msg: "Every dollar is assigned. That is exactly how a budget is supposed to work." });
 
-    if (hasNil()) {
-      var target = state.nilLevelIdx >= 0 ? taxSetAside(state.nilLevelIdx, nilMonthly()) : nilMonthly() * 0.15;
+    if (hasNil() && taxableNilMonthly() > 0) {
+      var base = taxableNilMonthly();
+      var target = state.nilLevelIdx >= 0 ? taxSetAside(state.nilLevelIdx, base) : base * 0.15;
       if (num(b.tax) < target * 0.9)
         out.push({ type: "flag", ic: "&#129534;", msg: "Your Taxes bucket looks light for your revenue sharing and NIL income. Open the Taxes details, pick your income level, and set aside the estimated amount so tax season is not a surprise." });
     }
