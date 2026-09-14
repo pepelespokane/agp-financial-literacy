@@ -61,8 +61,10 @@
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
   }
-  function reset() {
+  var justCleared = false;
+  function reset(confirmMsg) {
     localStorage.removeItem(KEY);
+    justCleared = !!confirmMsg;
     state.screen = "welcome"; state.goal = ""; state.favMemory = ""; state.memoryRevealed = false;
     state.income = { stipend: { amt: 0, freq: "monthly" }, revshare: { amt: 0, freq: "monthly" }, nil: { amt: 0, freq: "monthly" }, job: { amt: 0, freq: "monthly" }, family: { amt: 0, freq: "monthly" }, other: { amt: 0, freq: "monthly" } };
     state.buckets = { tax: 0, expenses: 0, emergency: 0, investing: 0, fun: 0 };
@@ -180,10 +182,12 @@
           '<button class="btn" id="start">Start</button>' +
           '<button class="btn ghost" id="reset">Start over</button>' +
         '</div>' +
-        '<p class="hint" style="text-align:center">Takes about 5 minutes. Nothing you enter leaves your phone.</p>' +
+        (justCleared ? '<div class="callout cleared">&#9989; <b>Cleared.</b> Your budget has been erased from this device.</div>' : "") +
+        '<p class="hint" style="text-align:center">Takes about 5 minutes. Nothing you enter is sent anywhere. Your numbers are saved in this browser, on this device, and AGP never sees them.</p>' +
       '</div>'
     ));
     document.getElementById("start").onclick = function () { go("goal"); };
+    justCleared = false;
     document.getElementById("reset").onclick = function () { if (confirm("Clear everything and start fresh?")) reset(); };
   }
 
@@ -605,10 +609,20 @@
           '<button class="btn secondary" id="edit">Adjust my buckets</button>' +
           '<button class="btn ghost" id="reset">Start over</button>' +
         '</div>' +
+        '<div class="card privacy">' +
+          '<h4>Where your numbers live</h4>' +
+          '<p class="sub">Nothing you entered was sent anywhere. It is saved in this browser, on this device only, so you can come back to it. ' +
+            '<b>AGP never sees your numbers.</b></p>' +
+          '<button class="btn ghost danger" id="wipe">Clear my data from this device</button>' +
+          '<p class="hint">On a borrowed or shared phone? Tap this before you hand it back.</p>' +
+        '</div>' +
       '</div>'
     ));
     document.getElementById("edit").onclick = function () { go("allocate"); };
     document.getElementById("reset").onclick = function () { if (confirm("Clear everything and start fresh?")) reset(); };
+    document.getElementById("wipe").onclick = function () {
+      if (confirm("Erase your budget from this device? This cannot be undone, so screenshot it first if you want to keep it.")) reset(true);
+    };
   }
 
   function buildCoaching() {

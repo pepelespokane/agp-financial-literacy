@@ -149,6 +149,14 @@ select.freq:focus{border-color:var(--accent)}
 .checkrow input[type=checkbox]{flex:0 0 auto;width:18px;height:18px;margin:1px 0 0;accent-color:var(--accent);cursor:pointer}
 .checkrow .sub{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:3px}
 
+/* privacy card + clear-data action */
+.card.privacy{text-align:center;padding:16px}
+.card.privacy h4{margin:0 0 6px;font-size:15px;font-weight:800}
+.card.privacy .sub{margin:0 0 12px}
+.btn.ghost.danger{color:#B4232A;border-color:#E6C2C4}
+.btn.ghost.danger:hover{background:#FDF3F3}
+.callout.cleared{background:#EAF7F0;border-color:#BFE6D2;text-align:center}
+
 /* callouts */
 .callout{background:#F0F9F4;border:1px solid #CDEBD9;border-radius:12px;padding:12px 14px;font-size:13.5px;margin:12px 0}
 .callout.warn{background:#FEF6E7;border-color:#F6DFB0}
