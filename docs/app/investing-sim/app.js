@@ -245,27 +245,59 @@
             (c.real ? '<span class="badge real">real history</span>' : '<span class="badge model">modeled</span>') + '</div>' +
           '<div class="alloc-val" id="' + prefix + 'v_' + c.key + '">' + mix[c.key] + '%</div>' +
         '</div>' +
-        '<input type="range" min="0" max="100" step="5" id="' + prefix + 's_' + c.key + '" value="' + mix[c.key] + '">' +
+        '<input type="range" class="' + c.key + '" min="0" max="100" step="5" id="' +
+          prefix + 's_' + c.key + '" value="' + mix[c.key] + '" aria-label="' + c.name + ' percentage">' +
         '<div class="alloc-desc">' + c.desc + '</div>' +
       '</div>';
-    }).join("");
+    }).join("") + mixBar(prefix);
   }
-  function wireMix(mix, prefix, totalId, warnId, btnId) {
-    function refresh() {
-      var t = CLASSES.reduce(function (a, c) { return a + mix[c.key]; }, 0);
-      var tEl = document.getElementById(totalId);
-      tEl.textContent = t + "%"; tEl.className = t === 100 ? "ok" : "bad";
-      document.getElementById(warnId).style.display = t === 100 ? "none" : "";
-      document.getElementById(btnId).disabled = t !== 100;
+  function mixSummary(mix) {
+    return CLASSES.filter(function (c) { return mix[c.key] > 0; })
+      .map(function (c) { return mix[c.key] + "% " + c.name; }).join(" · ") || "Nothing allocated";
+  }
+  function mixBar(prefix) {
+    return '<div class="mixbar" id="' + prefix + 'bar">' +
+        CLASSES.map(function (c) { return '<i class="' + c.key + '" id="' + prefix + 'bar_' + c.key + '"></i>'; }).join("") +
+      '</div><div class="mixlabel" id="' + prefix + 'barlbl"></div>';
+  }
+  /* Moving one slider redistributes the others so the mix always totals 100.
+     On a phone, making someone hand-balance three numbers to exactly 100 is the
+     fastest way to lose them. */
+  function rebalanceMix(mix, movedKey) {
+    var v = Math.max(0, Math.min(100, mix[movedKey]));
+    mix[movedKey] = v;
+    var others = CLASSES.map(function (c) { return c.key; }).filter(function (k) { return k !== movedKey; });
+    var rest = 100 - v;
+    var cur = others.reduce(function (a, k) { return a + mix[k]; }, 0);
+    if (cur <= 0) {
+      mix[others[0]] = Math.round(rest / 2 / 5) * 5;
+      mix[others[1]] = rest - mix[others[0]];
+    } else {
+      var first = Math.round((mix[others[0]] / cur) * rest / 5) * 5;
+      first = Math.max(0, Math.min(rest, first));
+      mix[others[0]] = first;
+      mix[others[1]] = rest - first;
+    }
+  }
+  function wireMix(mix, prefix, btnId) {
+    function paint() {
+      CLASSES.forEach(function (c) {
+        document.getElementById(prefix + "v_" + c.key).textContent = mix[c.key] + "%";
+        var sl = document.getElementById(prefix + "s_" + c.key);
+        if (num(sl.value) !== mix[c.key]) sl.value = mix[c.key];
+        document.getElementById(prefix + "bar_" + c.key).style.width = mix[c.key] + "%";
+      });
+      document.getElementById(prefix + "barlbl").innerHTML = CLASSES.filter(function (c) { return mix[c.key] > 0; })
+        .map(function (c) { return '<span>' + c.name + ' ' + mix[c.key] + '%</span>'; }).join("") || "<span>Nothing allocated</span>";
     }
     CLASSES.forEach(function (c) {
       document.getElementById(prefix + "s_" + c.key).addEventListener("input", function () {
         mix[c.key] = num(this.value);
-        document.getElementById(prefix + "v_" + c.key).textContent = mix[c.key] + "%";
-        refresh(); save();
+        rebalanceMix(mix, c.key);
+        paint(); save();
       });
     });
-    refresh();
+    paint();
   }
 
   function renderAllocate() {
@@ -278,13 +310,12 @@
         '<div class="callout"><b>This is money you will not touch for 40 years.</b> Your emergency fund and your savings are a different job and they are not part of this. ' +
         'Never invest money you might need soon.</div>' +
         mixSliders(mix, "a") +
-        '<div class="totalbar"><span>Total</span><span id="allocTotal">100%</span></div>' +
-        '<div class="callout warn" id="allocWarn" style="display:none">Get to 100% to keep going.</div>' +
+        '<p class="hint">Move one and the others adjust. It always adds up to 100.</p>' +
         '<button class="btn" id="next">Lock it in</button>' +
         '<button class="btn ghost" id="back">Back</button>' +
       '</div></div>'
     ));
-    wireMix(mix, "a", "allocTotal", "allocWarn", "next");
+    wireMix(mix, "a", "next");
     document.getElementById("next").onclick = function () {
       var ys = startYears();
       state.startYear = ys[Math.floor(Math.random() * ys.length)];
@@ -365,9 +396,9 @@
         chipRow("cpMon", MONTHLY_OPTS, d.monthly, function (v) { return "$" + v; }) +
         '<p class="hint">You have been putting in ' + moneyFull(lp.monthly) + ' a month.</p>' +
         '<label class="fld">Your mix</label>' +
-        mixSliders(d.mix, "c") +
-        '<div class="totalbar"><span>Total</span><span id="cpTotal">100%</span></div>' +
-        '<div class="callout warn" id="cpWarn" style="display:none">Get to 100% to keep going.</div>' +
+        '<button class="disclose" id="cpToggle">Change my mix' +
+          '<span class="cur">' + mixSummary(d.mix) + '</span></button>' +
+        '<div id="cpMix" hidden>' + mixSliders(d.mix, "c") + '</div>' +
         '<button class="btn" id="next">Confirm and keep going</button>' +
         '<p class="hint">Changing nothing is a real choice, and often the right one.</p>' +
       '</div></div>'
@@ -375,7 +406,13 @@
     Array.prototype.forEach.call(document.getElementById("cpMon").querySelectorAll(".chip"), function (c) {
       c.onclick = function () { state.draft.monthly = num(this.getAttribute("data-v")); save(); render(); };
     });
-    wireMix(d.mix, "c", "cpTotal", "cpWarn", "next");
+    var cpMix = document.getElementById("cpMix"), cpToggle = document.getElementById("cpToggle");
+    wireMix(d.mix, "c", "next");
+    cpToggle.onclick = function () {
+      cpMix.hidden = !cpMix.hidden;
+      cpToggle.firstChild.nodeValue = cpMix.hidden ? "Change my mix" : "Keep it as it is";
+      if (!cpMix.hidden) cpMix.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
     document.getElementById("next").onclick = function () {
       var changed = d.monthly !== lp.monthly || d.mix.stocks !== lp.mix.stocks ||
                     d.mix.bonds !== lp.mix.bonds || d.mix.bet !== lp.mix.bet;
