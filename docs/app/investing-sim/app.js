@@ -152,7 +152,7 @@
     var bet = betPath(startYear);
     var bal = { stocks: 0, bonds: 0, bet: 0, cash: 0 };
     var cur = normalize(plans[0].mix), monthly = plans[0].monthly;
-    var hist = [], contributed = lump, wasOut = false;
+    var hist = [], contributed = lump, wasOut = false, unit = 1;
 
     bal.stocks = lump * cur.stocks; bal.bonds = lump * cur.bonds; bal.bet = lump * cur.bet;
 
@@ -161,8 +161,8 @@
       for (var p = 1; p < plans.length; p++) {
         if (plans[p].at !== i) continue;
         var nm = normalize(plans[p].mix);
-        var tot = bal.stocks + bal.bonds + bal.bet;
-        bal = { stocks: tot * nm.stocks, bonds: tot * nm.bonds, bet: tot * nm.bet };
+        var tot = bal.stocks + bal.bonds + bal.bet;   // money sitting in savings is not rebalanced
+        bal.stocks = tot * nm.stocks; bal.bonds = tot * nm.bonds; bal.bet = tot * nm.bet;
         cur = nm; monthly = plans[p].monthly;
       }
       var m = BY_YEAR[startYear + i];
@@ -180,12 +180,14 @@
       if (out) {
         bal.cash += c;
         bal.cash *= (1 + m.tbill);
+        unit *= (1 + m.tbill);
       } else {
         bal.stocks += c * cur.stocks; bal.bonds += c * cur.bonds; bal.bet += c * cur.bet;
         bal.stocks *= (1 + m.sp); bal.bonds *= (1 + m.tbond); bal.bet *= (1 + bet[i]);
+        unit *= (1 + cur.stocks * m.sp + cur.bonds * m.tbond + cur.bet * bet[i]);
       }
       hist.push({
-        i: i, year: startYear + i, out: out,
+        i: i, year: startYear + i, out: out, unit: unit,
         total: bal.stocks + bal.bonds + bal.bet + bal.cash,
         contributed: contributed,
         bal: { stocks: bal.stocks, bonds: bal.bonds, bet: bal.bet, cash: bal.cash },
@@ -202,11 +204,13 @@
     return { hist: hist, final: hist[YEARS - 1].total, contributed: contributed,
              inflation: infl, savings: savings, yearsOut: yearsOut };
   }
+  /* Measured on the contribution-free unit value. Using the account balance hides
+     drawdowns, because fresh money keeps topping it back up. */
   function maxDrawdown(hist, from, to) {
     var peak = -Infinity, dd = 0;
-    for (var i = from; i < to && i < hist.length; i++) {
-      peak = Math.max(peak, hist[i].total);
-      if (peak > 0) dd = Math.max(dd, (peak - hist[i].total) / peak);
+    for (var i = Math.max(0, from - 1); i < to && i < hist.length; i++) {
+      peak = Math.max(peak, hist[i].unit);
+      if (peak > 0) dd = Math.max(dd, (peak - hist[i].unit) / peak);
     }
     return dd;
   }
@@ -436,11 +440,11 @@
         '<div class="sub">You have put in ' + moneyFull(last.contributed) + '</div>' +
         chartSvg(run.hist, b.to) +
         '<div class="statrow grid4">' +
-          '<div class="stat"><span>Avg per year</span><b class="' + (avg >= 0 ? "pos" : "neg") + '">' + pctStr(avg) + '</b><i>stocks, this decade</i></div>' +
-          '<div class="stat"><span>Worst year</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>year ' + (worst.i + 1) + '</i></div>' +
-          '<div class="stat"><span>Best year</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>year ' + (best.i + 1) + '</i></div>' +
-          '<div class="stat"><span>Deepest drop</span><b class="' + (dd > 0.2 ? "neg" : "") + '">' +
-            (Math.round(dd * 100) === 0 ? "none" : "-" + Math.round(dd * 100) + "%") + '</b><i>peak to low</i></div>' +
+          '<div class="stat"><span>Market avg/yr</span><b class="' + (avg >= 0 ? "pos" : "neg") + '">' + pctStr(avg) + '</b><i>stocks</i></div>' +
+          '<div class="stat"><span>Market worst</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>stocks, year ' + (worst.i + 1) + '</i></div>' +
+          '<div class="stat"><span>Market best</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>stocks, year ' + (best.i + 1) + '</i></div>' +
+          '<div class="stat"><span>Your deepest drop</span><b class="' + (dd > 0.2 ? "neg" : "") + '">' +
+            (Math.round(dd * 100) === 0 ? "none" : "-" + Math.round(dd * 100) + "%") + '</b><i>your mix</i></div>' +
         '</div>' +
         '<button class="btn" id="next">' + ({ end: "See how it ended", dip: "Keep reading",
             checkpoint: "Check in", waiting: "Keep reading" }[stop.kind] || "Continue") + '</button>' +
@@ -510,8 +514,8 @@
   function renderDip() {
     var run = currentRun(), i = state.cursor - 1, h = run.hist[i];
     var peak = 0;
-    for (var k = 0; k <= i; k++) peak = Math.max(peak, run.hist[k].total);
-    var down = peak > 0 ? (peak - h.total) / peak : 0;
+    for (var k = 0; k <= i; k++) peak = Math.max(peak, run.hist[k].unit);
+    var down = peak > 0 ? (peak - h.unit) / peak : 0;
     app.appendChild(el(
       '<div class="screen"><div class="card">' +
         '<span class="tag">Year ' + (i + 1) + '</span>' +
