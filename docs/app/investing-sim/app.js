@@ -45,7 +45,7 @@
     { key: "bonds", name: "Bonds", real: true,
       desc: "Lending money to the government and collecting interest. Grows slower, falls less, and often holds up when stocks are falling." },
     { key: "bet", name: "One Big Bet", real: false,
-      desc: "Everything on a single thing: one company's stock, or one crypto coin. Not spread out at all. If that one thing does well you do great. If it does badly there is nothing else to catch you." }
+      desc: "Everything riding on one company's stock instead of spread across thousands. If that one company does well you do great. If it runs into trouble there is nothing else to catch you." }
   ];
 
   /* ---------------- state ---------------- */
@@ -59,6 +59,9 @@
       startYear: null,
       salt: Math.floor(Math.random() * 1000000),
       segIndex: 0,
+      cursor: 0,
+      outs: [],
+      dipsUsed: 0,
       draft: null
     };
   }
@@ -138,11 +141,18 @@
     for (var p = 1; p < plans.length; p++) if (plans[p].at <= i) m = plans[p].monthly;
     return m;
   }
-  function simulate(lump, plans, startYear) {
+  function isOut(i, outs) {
+    for (var k = 0; k < (outs || []).length; k++) {
+      var o = outs[k];
+      if (i >= o.from && (o.to === null || o.to === undefined || i < o.to)) return true;
+    }
+    return false;
+  }
+  function simulate(lump, plans, startYear, outs) {
     var bet = betPath(startYear);
-    var bal = { stocks: 0, bonds: 0, bet: 0 };
+    var bal = { stocks: 0, bonds: 0, bet: 0, cash: 0 };
     var cur = normalize(plans[0].mix), monthly = plans[0].monthly;
-    var hist = [], contributed = lump;
+    var hist = [], contributed = lump, wasOut = false;
 
     bal.stocks = lump * cur.stocks; bal.bonds = lump * cur.bonds; bal.bet = lump * cur.bet;
 
@@ -158,12 +168,28 @@
       var m = BY_YEAR[startYear + i];
       var c = monthly * 12;
       contributed += c;
-      bal.stocks += c * cur.stocks; bal.bonds += c * cur.bonds; bal.bet += c * cur.bet;
-      bal.stocks *= (1 + m.sp); bal.bonds *= (1 + m.tbond); bal.bet *= (1 + bet[i]);
+      var out = isOut(i, outs);
+      if (out && !wasOut) {            // step out: everything to cash
+        bal.cash += bal.stocks + bal.bonds + bal.bet;
+        bal.stocks = bal.bonds = bal.bet = 0;
+      } else if (!out && wasOut) {     // step back in: redeploy at the current mix
+        bal.stocks += bal.cash * cur.stocks; bal.bonds += bal.cash * cur.bonds; bal.bet += bal.cash * cur.bet;
+        bal.cash = 0;
+      }
+      wasOut = out;
+      if (out) {
+        bal.cash += c;
+        bal.cash *= (1 + m.tbill);
+      } else {
+        bal.stocks += c * cur.stocks; bal.bonds += c * cur.bonds; bal.bet += c * cur.bet;
+        bal.stocks *= (1 + m.sp); bal.bonds *= (1 + m.tbond); bal.bet *= (1 + bet[i]);
+      }
       hist.push({
-        i: i, year: startYear + i, total: bal.stocks + bal.bonds + bal.bet,
-        contributed: contributed, bal: { stocks: bal.stocks, bonds: bal.bonds, bet: bal.bet },
-        r: { stocks: m.sp, bonds: m.tbond, bet: bet[i] }
+        i: i, year: startYear + i, out: out,
+        total: bal.stocks + bal.bonds + bal.bet + bal.cash,
+        contributed: contributed,
+        bal: { stocks: bal.stocks, bonds: bal.bonds, bet: bal.bet, cash: bal.cash },
+        r: { stocks: m.sp, bonds: m.tbond, bet: bet[i], cash: m.tbill }
       });
     }
     /* the same money left in a plain savings account, for the inflation comparison */
@@ -172,7 +198,9 @@
       infl *= (1 + BY_YEAR[startYear + j].cpi);
       savings = (savings + plansMonthlyAt(plans, j) * 12) * (1 + BY_YEAR[startYear + j].tbill);
     }
-    return { hist: hist, final: hist[YEARS - 1].total, contributed: contributed, inflation: infl, savings: savings };
+    var yearsOut = hist.filter(function (h) { return h.out; }).length;
+    return { hist: hist, final: hist[YEARS - 1].total, contributed: contributed,
+             inflation: infl, savings: savings, yearsOut: yearsOut };
   }
   function maxDrawdown(hist, from, to) {
     var peak = -Infinity, dd = 0;
@@ -181,6 +209,29 @@
       if (peak > 0) dd = Math.max(dd, (peak - hist[i].total) / peak);
     }
     return dd;
+  }
+  var DIP_THRESHOLD = -0.15;   // a year bad enough that real people bail
+  var MAX_DIPS = 2;
+  function currentlyOut() {
+    var o = state.outs[state.outs.length - 1];
+    return o && (o.to === null || o.to === undefined);
+  }
+  /* Where does the run pause next? Whichever comes first:
+     - every year, while sitting in cash, so the choice to come back is live
+     - a bad year big enough that real people bail (at most MAX_DIPS times)
+     - the ten year check-in
+     - the end */
+  function nextStop(run) {
+    var c = state.cursor;
+    if (c >= YEARS) return { at: YEARS, kind: "end" };
+    if (currentlyOut()) return { at: c + 1, kind: "waiting" };
+    var checkpoint = Math.min(YEARS, (Math.floor(c / 10) + 1) * 10);
+    if (state.dipsUsed < MAX_DIPS) {
+      for (var i = c; i < checkpoint; i++) {
+        if (run.hist[i].r.stocks <= DIP_THRESHOLD && !isOut(i, state.outs)) return { at: i + 1, kind: "dip" };
+      }
+    }
+    return { at: checkpoint, kind: checkpoint >= YEARS ? "end" : "checkpoint" };
   }
   function segBounds(idx) {
     var f = 0;
@@ -194,7 +245,8 @@
   function render() {
     app.innerHTML = "";
     var f = { welcome: renderWelcome, allocate: renderAllocate, start: renderStart,
-              segment: renderSegment, checkpoint: renderCheckpoint, reveal: renderReveal }[state.screen];
+              segment: renderSegment, checkpoint: renderCheckpoint, dip: renderDip,
+              waiting: renderWaiting, reveal: renderReveal }[state.screen];
     (f || renderWelcome)();
   }
 
@@ -220,20 +272,40 @@
           'You will make a few decisions along the way, the same ones real investors make, and see where it lands.</p>' +
           '<div class="callout"><b>The market you get is real.</b> Stocks and bonds here follow an actual 40 year stretch of market history. ' +
           'The crashes are real crashes and the recoveries are real recoveries. <b>You find out which stretch at the end.</b></div>' +
-          '<label class="fld">Anything to start with?</label>' +
-          chipRow("lumpChips", START_OPTS, state.lump, function (v) { return v === 0 ? "Nothing" : "$" + v; }) +
-          '<label class="fld">How much can you add each month?</label>' +
+          '<label class="fld" for="lumpIn">Anything to start with?</label>' +
+          '<div class="money-in"><input type="number" inputmode="numeric" id="lumpIn" placeholder="0" min="0" step="50" value="' +
+            (state.lump ? state.lump : "") + '"></div>' +
+          '<p class="hint">Leave it blank if you are starting from nothing. That is where most people start.</p>' +
+          '<label class="fld" for="monIn">How much can you add each month?</label>' +
+          '<div class="money-in"><input type="number" inputmode="numeric" id="monIn" placeholder="0" min="0" step="25" value="' +
+            (plan0().monthly ? plan0().monthly : "") + '"></div>' +
           chipRow("monChips", MONTHLY_OPTS, plan0().monthly, function (v) { return "$" + v; }) +
-          '<p class="hint">Pick what feels realistic for you. You get chances to change it later, and whether you do is part of the lesson.</p>' +
+          '<p class="hint">Type any amount, or tap one. You get chances to change it later, and whether you do is part of the lesson.</p>' +
           '<button class="btn" id="next">Build my mix</button>' +
           '<button class="btn ghost" id="reset">Start over</button>' +
         '</div>' +
       '</div>'
     ));
     state.justCleared = false;
-    wireChips("lumpChips", function (v) { state.lump = v; });
-    wireChips("monChips", function (v) { plan0().monthly = v; });
-    document.getElementById("next").onclick = function () { go("allocate"); };
+    var lumpIn = document.getElementById("lumpIn"), monIn = document.getElementById("monIn");
+    lumpIn.addEventListener("input", function () { state.lump = Math.max(0, num(this.value)); save(); });
+    monIn.addEventListener("input", function () {
+      plan0().monthly = Math.max(0, num(this.value));
+      Array.prototype.forEach.call(document.querySelectorAll("#monChips .chip"), function (c) {
+        c.classList.toggle("on", num(c.getAttribute("data-v")) === plan0().monthly);
+      });
+      save();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#monChips .chip"), function (c) {
+      c.onclick = function () {
+        plan0().monthly = num(this.getAttribute("data-v"));
+        monIn.value = plan0().monthly; save(); render();
+      };
+    });
+    document.getElementById("next").onclick = function () {
+      if (state.lump <= 0 && plan0().monthly <= 0) { alert("Put in a starting amount or a monthly amount to get going."); return; }
+      go("allocate");
+    };
     document.getElementById("reset").onclick = function () { reset(false); };
   }
 
@@ -320,7 +392,7 @@
       var ys = startYears();
       state.startYear = ys[Math.floor(Math.random() * ys.length)];
       state.salt = Math.floor(Math.random() * 1000000);
-      state.segIndex = 0;
+      state.segIndex = 0; state.cursor = 0; state.outs = []; state.dipsUsed = 0;
       state.plans = [{ at: 0, monthly: plan0().monthly, mix: { stocks: mix.stocks, bonds: mix.bonds, bet: mix.bet } }];
       go("start");
     };
@@ -341,46 +413,56 @@
     document.getElementById("next").onclick = function () { go("segment"); };
   }
 
-  function currentRun() { return simulate(state.lump, state.plans, state.startYear); }
+  function currentRun() { return simulate(state.lump, state.plans, state.startYear, state.outs); }
 
   function renderSegment() {
-    var run = currentRun(), b = segBounds(state.segIndex);
+    var run = currentRun();
+    var stop = nextStop(run);
+    var b = { from: state.cursor, to: stop.at };
+    if (b.to <= b.from) { state.cursor = b.to; go(stop.kind === "end" ? "reveal" : stop.kind); return; }
     var last = run.hist[b.to - 1], dd = maxDrawdown(run.hist, b.from, b.to);
-    var worst = null, best = null;
+    var worst = null, best = null, growth = 1;
     for (var i = b.from; i < b.to; i++) {
       if (!worst || run.hist[i].r.stocks < worst.r.stocks) worst = run.hist[i];
       if (!best || run.hist[i].r.stocks > best.r.stocks) best = run.hist[i];
+      growth *= (1 + run.hist[i].r.stocks);
     }
+    /* compounded average, not the arithmetic mean: the number you actually lived */
+    var avg = Math.pow(growth, 1 / (b.to - b.from)) - 1;
     app.appendChild(el(
       '<div class="screen"><div class="card">' +
-        '<span class="tag">Years ' + (b.from + 1) + ' to ' + b.to + '</span>' +
+        '<span class="tag">' + (b.to - b.from === 1 ? "Year " + b.to : "Years " + (b.from + 1) + " to " + b.to) + '</span>' +
         '<div class="bigfig">' + moneyFull(last.total) + '</div>' +
         '<div class="sub">You have put in ' + moneyFull(last.contributed) + '</div>' +
         chartSvg(run.hist, b.to) +
-        '<div class="statrow">' +
-          '<div class="stat"><span>Worst year</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>stocks, year ' + (worst.i + 1) + '</i></div>' +
-          '<div class="stat"><span>Best year</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>stocks, year ' + (best.i + 1) + '</i></div>' +
+        '<div class="statrow grid4">' +
+          '<div class="stat"><span>Avg per year</span><b class="' + (avg >= 0 ? "pos" : "neg") + '">' + pctStr(avg) + '</b><i>stocks, this decade</i></div>' +
+          '<div class="stat"><span>Worst year</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>year ' + (worst.i + 1) + '</i></div>' +
+          '<div class="stat"><span>Best year</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>year ' + (best.i + 1) + '</i></div>' +
           '<div class="stat"><span>Deepest drop</span><b class="' + (dd > 0.2 ? "neg" : "") + '">' +
             (Math.round(dd * 100) === 0 ? "none" : "-" + Math.round(dd * 100) + "%") + '</b><i>peak to low</i></div>' +
         '</div>' +
-        '<button class="btn" id="next">' + (state.segIndex < 3 ? "Check in" : "See how it ended") + '</button>' +
+        '<button class="btn" id="next">' + ({ end: "See how it ended", dip: "Keep reading",
+            checkpoint: "Check in", waiting: "Keep reading" }[stop.kind] || "Continue") + '</button>' +
       '</div></div>'
     ));
     document.getElementById("next").onclick = function () {
-      if (state.segIndex < 3) {
+      state.cursor = b.to;
+      if (stop.kind === "end") { save(); go("reveal"); return; }
+      if (stop.kind === "checkpoint") {
         var lp = lastPlan();
-        state.draft = { at: segBounds(state.segIndex).to, monthly: lp.monthly,
+        state.draft = { at: b.to, monthly: lp.monthly,
                         mix: { stocks: lp.mix.stocks, bonds: lp.mix.bonds, bet: lp.mix.bet } };
-        go("checkpoint");
-      } else go("reveal");
+      }
+      save(); go(stop.kind);
     };
   }
 
   /* Every ten years: put in more or less, change the mix, or change nothing. All real choices. */
   function renderCheckpoint() {
-    var run = currentRun(), b = segBounds(state.segIndex);
-    var dd = maxDrawdown(run.hist, b.from, b.to);
-    var lp = lastPlan(), d = state.draft, yrs = YEARS - b.to;
+    var run = currentRun(), at = state.cursor;
+    var dd = maxDrawdown(run.hist, Math.max(0, at - 10), at);
+    var lp = lastPlan(), d = state.draft, yrs = YEARS - at;
     var context = dd >= 0.25
       ? '<div class="callout warn"><b>That was a rough stretch.</b> At one point your money was down ' + Math.round(dd * 100) +
         '% from its high. This is where a lot of people cut back on what they put in, or move everything somewhere that feels safer. ' +
@@ -389,15 +471,15 @@
         'This is a normal point to look at what you are doing and adjust.</div>';
     app.appendChild(el(
       '<div class="screen"><div class="card">' +
-        '<span class="tag">Check in &middot; end of year ' + b.to + '</span>' +
+        '<span class="tag">Check in &middot; end of year ' + at + '</span>' +
         '<h1 class="title">Anything you want to change?</h1>' +
         context +
         '<label class="fld">Monthly amount</label>' +
         chipRow("cpMon", MONTHLY_OPTS, d.monthly, function (v) { return "$" + v; }) +
         '<p class="hint">You have been putting in ' + moneyFull(lp.monthly) + ' a month.</p>' +
         '<label class="fld">Your mix</label>' +
-        '<button class="disclose" id="cpToggle">Change my mix' +
-          '<span class="cur">' + mixSummary(d.mix) + '</span></button>' +
+        '<button class="disclose" id="cpToggle"><span class="chev">&#9662;</span>Change my mix' +
+          '<span class="cur">Right now: ' + mixSummary(d.mix) + '</span></button>' +
         '<div id="cpMix" hidden>' + mixSliders(d.mix, "c") + '</div>' +
         '<button class="btn" id="next">Confirm and keep going</button>' +
         '<p class="hint">Changing nothing is a real choice, and often the right one.</p>' +
@@ -410,26 +492,89 @@
     wireMix(d.mix, "c", "next");
     cpToggle.onclick = function () {
       cpMix.hidden = !cpMix.hidden;
-      cpToggle.firstChild.nodeValue = cpMix.hidden ? "Change my mix" : "Keep it as it is";
+      cpToggle.childNodes[1].nodeValue = cpMix.hidden ? "Change my mix" : "Keep it as it is";
+      cpToggle.querySelector(".chev").innerHTML = cpMix.hidden ? "&#9662;" : "&#9652;";
       if (!cpMix.hidden) cpMix.scrollIntoView({ behavior: "smooth", block: "nearest" });
     };
     document.getElementById("next").onclick = function () {
       var changed = d.monthly !== lp.monthly || d.mix.stocks !== lp.mix.stocks ||
                     d.mix.bonds !== lp.mix.bonds || d.mix.bet !== lp.mix.bet;
       if (changed) state.plans.push({ at: d.at, monthly: d.monthly, mix: d.mix });
-      state.draft = null; state.segIndex++;
+      state.draft = null;
       save(); go("segment");
     };
   }
 
+  /* A bad enough year that real people bail. The whole point is that you do not
+     know how deep it goes or when it turns. */
+  function renderDip() {
+    var run = currentRun(), i = state.cursor - 1, h = run.hist[i];
+    var peak = 0;
+    for (var k = 0; k <= i; k++) peak = Math.max(peak, run.hist[k].total);
+    var down = peak > 0 ? (peak - h.total) / peak : 0;
+    app.appendChild(el(
+      '<div class="screen"><div class="card">' +
+        '<span class="tag">Year ' + (i + 1) + '</span>' +
+        '<h1 class="title">The market just fell ' + Math.abs(Math.round(h.r.stocks * 100)) + '% this year.</h1>' +
+        '<div class="callout warn">Your money is down <b>' + Math.round(down * 100) + '%</b> from its high point. ' +
+        'The news says it could get worse. <b>Nobody can tell you how far down it goes, or when it turns.</b></div>' +
+        '<button class="choice" data-c="stay"><b>Ride it out</b><span>Stay invested and keep adding</span></button>' +
+        '<button class="choice" data-c="out"><b>Get out and wait</b><span>Move everything to cash until it settles down</span></button>' +
+        '<p class="hint">Both are things real people do. You find out how it turned out at the end.</p>' +
+      '</div></div>'
+    ));
+    Array.prototype.forEach.call(document.querySelectorAll(".choice"), function (btn) {
+      btn.onclick = function () {
+        state.dipsUsed++;
+        if (this.getAttribute("data-c") === "out") state.outs.push({ from: state.cursor, to: null });
+        save(); go("segment");
+      };
+    });
+  }
+
+  /* Sitting in cash. Each year you learn only what just happened, never what is next. */
+  function renderWaiting() {
+    var run = currentRun(), i = state.cursor - 1, h = run.hist[i];
+    var o = state.outs[state.outs.length - 1];
+    var yearsOut = state.cursor - o.from;
+    var up = h.r.stocks >= 0;
+    app.appendChild(el(
+      '<div class="screen"><div class="card">' +
+        '<span class="tag">Year ' + (i + 1) + ' &middot; sitting in cash</span>' +
+        '<h1 class="title">The market went ' + (up ? "UP" : "DOWN") + ' ' + Math.abs(Math.round(h.r.stocks * 100)) + '% this year.</h1>' +
+        '<div class="callout ' + (up ? "warn" : "") + '">' +
+          (up ? '<b>You were not in it.</b> Your cash earned ' + Math.round(h.r.cash * 100) + '% while that happened.'
+              : '<b>Staying out looks smart so far.</b> Your cash earned ' + Math.round(h.r.cash * 100) + '% instead.') +
+          ' You have been out for <b>' + yearsOut + ' year' + (yearsOut === 1 ? "" : "s") + '</b>.</div>' +
+        '<button class="choice" data-c="in"><b>Get back in</b><span>Put it all back to work at your mix</span></button>' +
+        '<button class="choice" data-c="stay"><b>Give it one more year</b><span>See what next year does first</span></button>' +
+        (yearsOut >= 3
+          ? '<button class="choice" data-c="never"><b>I am done with the market</b><span>Stay in cash for the rest of the 40 years</span></button>'
+          : "") +
+        '<p class="hint">You still cannot see what happens next. Neither can anyone else.</p>' +
+      '</div></div>'
+    ));
+    Array.prototype.forEach.call(document.querySelectorAll(".choice"), function (btn) {
+      btn.onclick = function () {
+        var c = this.getAttribute("data-c");
+        if (c === "in") o.to = state.cursor;
+        if (c === "never") o.to = YEARS;      // out for good, no more yearly prompts
+        save(); go("segment");
+      };
+    });
+  }
+
   function renderReveal() {
     var run = currentRun();
-    var never = simulate(state.lump, [state.plans[0]], state.startYear);
-    var base = simulate(state.lump, [{ at: 0, monthly: plan0().monthly, mix: { stocks: 80, bonds: 20, bet: 0 } }], state.startYear);
+    var never = simulate(state.lump, [state.plans[0]], state.startYear, []);
+    var stayedIn = simulate(state.lump, state.plans, state.startYear, []);
+    var satOut = run.yearsOut > 0;
+    var timingDiff = stayedIn.final - run.final;
+    var base = simulate(state.lump, [{ at: 0, monthly: plan0().monthly, mix: { stocks: 80, bonds: 20, bet: 0 } }], state.startYear, []);
     var real = run.final / run.inflation;
     var sy = state.startYear, ey = sy + YEARS - 1;
 
-    var all = startYears().map(function (y) { return simulate(state.lump, [state.plans[0]], y).final; });
+    var all = startYears().map(function (y) { return simulate(state.lump, [state.plans[0]], y, []).final; });
     var sorted = all.slice().sort(function (a, b) { return a - b; });
     var below = sorted.filter(function (v) { return v < never.final; }).length;
     var pctile = Math.round((below / sorted.length) * 100);
@@ -463,11 +608,27 @@
           moneyFull(run.savings / run.inflation) + '</b> in day-one money against the ' + moneyFull(run.contributed) + ' you put in. ' +
           '<b>That is why savings and investing are two different jobs.</b> Savings keeps money safe and available. It does not grow it.</p></div>' +
 
+        (satOut
+          ? (timingDiff > 0
+            ? '<div class="card flag"><h3>' + (run.yearsOut >= YEARS - 2
+                ? "You got out and never went back"
+                : "You stepped out of the market for " + run.yearsOut + " year" + (run.yearsOut === 1 ? "" : "s")) + '</h3>' +
+              '<p class="sub">Everything else identical, staying invested the whole way would have finished at <b>' + moneyFull(stayedIn.final) + '</b>. ' +
+              'Sitting out cost you <b>' + moneyFull(timingDiff) + '</b>.</p>' +
+              '<p class="hint">The drop was real and getting out felt sensible. <b>The problem is that the best years tend to arrive right after the worst ones, ' +
+              'while it still feels far too early to go back.</b> You have to be right twice: once on the way out, once on the way back in.</p></div>'
+            : '<div class="card ok"><h3>You stepped out for ' + run.yearsOut + ' year' + (run.yearsOut === 1 ? "" : "s") + ', and it worked</h3>' +
+              '<p class="sub">Staying invested throughout would have finished at <b>' + moneyFull(stayedIn.final) + '</b>. Getting out put you <b>' +
+              moneyFull(-timingDiff) + '</b> ahead.</p>' +
+              '<p class="hint">That does happen, and pretending otherwise would be dishonest. <b>You had to be right twice, on the way out and on the way back in, ' +
+              'and you were.</b> Run it again from a different stretch and count how often that holds.</p></div>')
+          : '') +
+
         (changed
           ? (diff > 0
-            ? '<div class="card flag"><h3>You made changes along the way</h3>' +
-              '<p class="sub">Set once and never touched, the same plan would have finished at <b>' + moneyFull(never.final) + '</b>. ' +
-              'The changes cost you <b>' + moneyFull(diff) + '</b>.</p>' +
+            ? '<div class="card flag"><h3>You changed your plan along the way</h3>' +
+              '<p class="sub">Set once on day one and never touched again, it would have finished at <b>' + moneyFull(never.final) + '</b>. ' +
+              'Everything you changed, together, cost you <b>' + moneyFull(diff) + '</b>.</p>' +
               '<p class="hint">Nobody changes course because they are careless. They do it because a drop feels unbearable, or money got tight. ' +
               'That is exactly why you decide what you will do before it happens.</p></div>'
             : '<div class="card ok"><h3>You made changes, and they helped</h3>' +
@@ -510,7 +671,9 @@
       '</div>'
     ));
     document.getElementById("again").onclick = function () {
-      state.screen = "allocate"; state.segIndex = 0; state.plans = [state.plans[0]]; save(); render();
+      state.screen = "allocate"; state.segIndex = 0; state.cursor = 0;
+      state.outs = []; state.dipsUsed = 0;
+      state.plans = [state.plans[0]]; save(); render();
     };
     document.getElementById("wipe").onclick = function () {
       if (confirm("Erase this run from the device? Screenshot it first if you want to keep it.")) reset(true);
