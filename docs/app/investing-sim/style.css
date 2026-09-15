@@ -74,7 +74,7 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .alloc-desc{font-size:12.5px;color:var(--muted);margin-top:5px}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:middle}
 .dot.stocks{background:var(--stocks)} .dot.bonds{background:var(--bonds)}
-.dot.cash{background:var(--cash)} .dot.bet{background:var(--bet)}
+.dot.bet{background:var(--bet)}
 .badge{display:inline-block;margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:.08em;
   text-transform:uppercase;padding:2px 6px;border-radius:4px;vertical-align:middle}
 .badge.real{background:#E8F1FE;color:#2E6BE6}
