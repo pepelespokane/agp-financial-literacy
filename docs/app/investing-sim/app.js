@@ -519,8 +519,9 @@
         '<div class="callout warn">Your money is down <b>' + Math.round(down * 100) + '%</b> from its high point. ' +
         'The news says it could get worse. <b>Nobody can tell you how far down it goes, or when it turns.</b></div>' +
         '<button class="choice" data-c="stay"><b>Ride it out</b><span>Stay invested and keep adding</span></button>' +
-        '<button class="choice" data-c="out"><b>Get out and wait</b><span>Move everything to cash until it settles down</span></button>' +
-        '<p class="hint">Both are things real people do. You find out how it turned out at the end.</p>' +
+        '<button class="choice" data-c="out"><b>Get out and wait</b><span>Move everything to a high yield savings account until it settles down</span></button>' +
+        '<p class="hint">A high yield savings account pays you interest and cannot lose money, but it does not grow the way the market can. ' +
+        'Both of these are things real people do. You find out how it turned out at the end.</p>' +
       '</div></div>'
     ));
     Array.prototype.forEach.call(document.querySelectorAll(".choice"), function (btn) {
@@ -540,16 +541,17 @@
     var up = h.r.stocks >= 0;
     app.appendChild(el(
       '<div class="screen"><div class="card">' +
-        '<span class="tag">Year ' + (i + 1) + ' &middot; sitting in cash</span>' +
+        '<span class="tag">Year ' + (i + 1) + ' &middot; sitting in savings</span>' +
         '<h1 class="title">The market went ' + (up ? "UP" : "DOWN") + ' ' + Math.abs(Math.round(h.r.stocks * 100)) + '% this year.</h1>' +
         '<div class="callout ' + (up ? "warn" : "") + '">' +
-          (up ? '<b>You were not in it.</b> Your cash earned ' + Math.round(h.r.cash * 100) + '% while that happened.'
-              : '<b>Staying out looks smart so far.</b> Your cash earned ' + Math.round(h.r.cash * 100) + '% instead.') +
+          (up ? '<b>You were not in it.</b> Your savings account earned ' + Math.round(h.r.cash * 100) + '% while that happened.'
+              : '<b>Staying out looks smart so far.</b> Your savings account earned ' + Math.round(h.r.cash * 100) + '% instead.') +
           ' You have been out for <b>' + yearsOut + ' year' + (yearsOut === 1 ? "" : "s") + '</b>.</div>' +
         '<button class="choice" data-c="in"><b>Get back in</b><span>Put it all back to work at your mix</span></button>' +
         '<button class="choice" data-c="stay"><b>Give it one more year</b><span>See what next year does first</span></button>' +
         (yearsOut >= 3
-          ? '<button class="choice" data-c="never"><b>I am done with the market</b><span>Stay in cash for the rest of the 40 years</span></button>'
+          ? '<button class="choice" data-c="never"><b>I am done with the market</b>' +
+            '<span>Move it to a high yield savings account and leave it there for the rest of the 40 years</span></button>'
           : "") +
         '<p class="hint">You still cannot see what happens next. Neither can anyone else.</p>' +
       '</div></div>'
@@ -612,12 +614,13 @@
           ? (timingDiff > 0
             ? '<div class="card flag"><h3>' + (run.yearsOut >= YEARS - 2
                 ? "You got out and never went back"
-                : "You stepped out of the market for " + run.yearsOut + " year" + (run.yearsOut === 1 ? "" : "s")) + '</h3>' +
+                : "You sat in savings for " + run.yearsOut + " year" + (run.yearsOut === 1 ? "" : "s")) + '</h3>' +
               '<p class="sub">Everything else identical, staying invested the whole way would have finished at <b>' + moneyFull(stayedIn.final) + '</b>. ' +
               'Sitting out cost you <b>' + moneyFull(timingDiff) + '</b>.</p>' +
-              '<p class="hint">The drop was real and getting out felt sensible. <b>The problem is that the best years tend to arrive right after the worst ones, ' +
-              'while it still feels far too early to go back.</b> You have to be right twice: once on the way out, once on the way back in.</p></div>'
-            : '<div class="card ok"><h3>You stepped out for ' + run.yearsOut + ' year' + (run.yearsOut === 1 ? "" : "s") + ', and it worked</h3>' +
+              '<p class="hint">The drop was real and getting out felt sensible, and a high yield savings account was doing its job the whole time. ' +
+              '<b>The problem is that the best years tend to arrive right after the worst ones, while it still feels far too early to go back.</b> ' +
+              'You have to be right twice: once on the way out, and once on the way back in.</p></div>'
+            : '<div class="card ok"><h3>You sat in savings for ' + run.yearsOut + ' year' + (run.yearsOut === 1 ? "" : "s") + ', and it worked</h3>' +
               '<p class="sub">Staying invested throughout would have finished at <b>' + moneyFull(stayedIn.final) + '</b>. Getting out put you <b>' +
               moneyFull(-timingDiff) + '</b> ahead.</p>' +
               '<p class="hint">That does happen, and pretending otherwise would be dishonest. <b>You had to be right twice, on the way out and on the way back in, ' +
