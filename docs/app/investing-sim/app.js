@@ -804,7 +804,9 @@
       '</div>'
     ));
     document.getElementById("again").onclick = function () {
-      state.screen = "allocate"; state.cursorM = 0; state.outs = []; state.dipsUsed = 0;
+      /* back to the very start, so the amounts can change too, not just the mix */
+      state.screen = "welcome"; state.cursorM = 0; state.outs = []; state.dipsUsed = 0;
+      state.startYear = null; state.draft = null;
       state.plans = [state.plans[0]]; save(); render();
     };
     document.getElementById("wipe").onclick = function () {
