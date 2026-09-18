@@ -169,6 +169,9 @@
     var bal = { stocks: 0, bonds: 0, bet: 0, cash: 0 };
     var cur = normalize(plans[0].mix), monthly = plans[0].monthly;
     var hist = [], contributed = lump, wasOut = false, unit = 1, mktIdx = 1;
+    /* Each contribution is made in the money of its own month. Deflating every one back to
+       day-one dollars is the only way to compare what went in against what came out. */
+    var realContrib = lump, priceLevel = 1;
 
     bal.stocks = lump * cur.stocks; bal.bonds = lump * cur.bonds; bal.bet = lump * cur.bet;
 
@@ -185,9 +188,12 @@
       var ms = monthlyStock(startYear + y);
       var mb = evenMonthly(yr.tbond), mk = evenMonthly(bet[y]), mc = evenMonthly(yr.tbill);
 
+      var mCpi = evenMonthly(yr.cpi);
       for (var k = 0; k < 12; k++) {
         var mi = y * 12 + k;
         contributed += monthly;
+        priceLevel *= (1 + mCpi);
+        realContrib += monthly / priceLevel;
         var out = isOut(mi, outs);
         if (out && !wasOut) {
           bal.cash += bal.stocks + bal.bonds + bal.bet;
@@ -223,6 +229,7 @@
     }
     var monthsOut = hist.filter(function (h) { return h.out; }).length;
     return { hist: hist, final: hist[MONTHS - 1].total, contributed: contributed,
+             realContributed: realContrib,
              inflation: infl, savings: savings, monthsOut: monthsOut,
              yearsOut: Math.round(monthsOut / 12 * 10) / 10 };
   }
@@ -733,12 +740,23 @@
           '<p class="sub">You were invested from <b>' + sy + ' to ' + ey + '</b>. Every stock and bond number you just saw is what actually happened in those years. Look it up.</p>' +
           '<p class="hint">You were not told at the time, because while you are living through it nobody tells you which year you are in either.</p></div>' +
 
-        '<div class="card"><h3>What it actually buys</h3>' +
-          '<p class="sub">Prices rose over those 40 years, so ' + moneyFull(run.final) + ' at the end does not buy what it would have on day one. ' +
-          'In day-one money that is <b>' + moneyFull(real) + '</b>.</p>' +
-          '<p class="hint">The same money in a plain savings account would have grown to ' + moneyFull(run.savings) + ', which is only <b>' +
-          moneyFull(run.savings / run.inflation) + '</b> in day-one money against the ' + moneyFull(run.contributed) + ' you put in. ' +
-          '<b>That is why savings and investing are two different jobs.</b> Savings keeps money safe and available. It does not grow it.</p></div>' +
+        '<div class="card"><h3>What it is worth after inflation</h3>' +
+          '<p class="sub">Prices rose about <b>' + run.inflation.toFixed(1) + ' times over</b> in those 40 years, so the end number and the ' +
+          'money you put in are not in the same units. Both in day-one dollars:</p>' +
+          '<div class="range">' +
+            '<div class="range-row"><span>What you put in</span><b>' + moneyFull(run.realContributed) + '</b></div>' +
+            '<div class="range-row"><span>What you ended with</span><b>' + moneyFull(real) + '</b></div>' +
+          '</div>' +
+          '<div class="callout ' + (real >= run.realContributed ? "ok" : "warn") + '">' +
+            (real >= run.realContributed
+              ? '<b>You multiplied what you put in by ' + (real / run.realContributed).toFixed(1) + ' times, after inflation.</b> ' +
+                'That is real growth, not just bigger numbers.'
+              : '<b>After inflation you ended with less than you put in.</b> Worth looking at which part of your mix did that.') +
+          '</div>' +
+          '<p class="hint">The same contributions left in a savings account would have come to <b>' +
+          moneyFull(run.savings / run.inflation) + '</b> in day-one dollars, a multiple of <b>' +
+          (run.savings / run.inflation / run.realContributed).toFixed(1) + 'x</b>. ' +
+          '<b>Savings and investing are two different jobs.</b> Savings keeps money safe and reachable. It roughly keeps pace with prices and not much more.</p></div>' +
 
         (satOut
           ? (timingDiff > 0
