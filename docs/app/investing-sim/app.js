@@ -50,7 +50,7 @@
   ];
 
   /* ---------------- state ---------------- */
-  var KEY = "agp_investsim_v2";
+  var KEY = "agp_investsim_v3";   // v2 held the pre-monthly state shape
   var state = null;
   function freshState() {
     return {
