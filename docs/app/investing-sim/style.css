@@ -186,6 +186,12 @@ input.bet::-moz-range-thumb{background:var(--bet)}
 .waitrow{display:flex;gap:8px;margin-top:8px}
 .waitrow .chip{font-size:14px;padding:11px 4px}
 
+/* contest scorecard */
+.card.scorecard{text-align:center;border:2px solid var(--accent);background:#fff}
+.scorecard .score{font-size:40px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05;margin:2px 0}
+.scorecard .scoremix{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:2px}
+.scorecard .range-row{text-align:left}
+
 /* callouts */
 .callout{background:#F1F5F9;border:1px solid #DBE3EC;border-radius:12px;padding:12px 14px;font-size:13.5px;margin:10px 0;line-height:1.5}
 .callout.warn{background:#FEF6E7;border-color:#F6DFB0}

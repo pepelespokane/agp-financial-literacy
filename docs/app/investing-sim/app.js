@@ -37,6 +37,16 @@
   var BET_MEAN = 0.10, BET_DRIFT = 0.03, BET_AMP = 1.6, BET_NOISE_SD = 0.30;
   var BET_WIPEOUT_P = 0.008, BET_WIPEOUT_R = -0.90;
 
+  /* Contest mode: ?contest=1 (or ?contest=1965 to name the year).
+     Everyone gets the same money and the same forty years, so the only things that differ
+     are the mix, the in-and-out decisions, and the One Big Bet draw. */
+  var CONTEST = (function () {
+    var v = new URLSearchParams(window.location.search).get("contest");
+    if (v === null) return null;
+    var y = parseInt(v, 10);
+    return { lump: 10000, monthly: 100, year: (y >= 1928 && y <= 1986) ? y : 1965 };
+  })();
+
   var START_OPTS = [0, 250, 500, 1000];
   var MONTHLY_OPTS = [25, 50, 100, 150, 200];
 
@@ -380,21 +390,36 @@
           'You will make a few decisions along the way, the same ones real investors make, and see where it lands.</p>' +
           '<div class="callout"><b>The market you get is real.</b> Stocks and bonds here follow an actual 40 year stretch of market history. ' +
           'The crashes are real crashes and the recoveries are real recoveries. <b>You find out which stretch at the end.</b></div>' +
-          '<label class="fld" for="lumpIn">Anything to start with?</label>' +
-          '<div class="money-in"><input type="number" inputmode="numeric" id="lumpIn" placeholder="0" min="0" step="50" value="' +
-            (state.lump ? state.lump : "") + '"></div>' +
-          '<p class="hint">Leave it blank if you are starting from nothing. That is where most people start.</p>' +
-          '<label class="fld" for="monIn">How much can you add each month?</label>' +
-          '<div class="money-in"><input type="number" inputmode="numeric" id="monIn" placeholder="0" min="0" step="25" value="' +
-            (plan0().monthly ? plan0().monthly : "") + '"></div>' +
-          chipRow("monChips", MONTHLY_OPTS, plan0().monthly, function (v) { return "$" + v; }) +
-          '<p class="hint">Type any amount, or tap one. You get chances to change it later, and whether you do is part of the lesson.</p>' +
+          (CONTEST
+            ? '<div class="callout ok"><b>Everyone in the room gets the same start.</b>' +
+                '<div class="range" style="margin:8px 0 0">' +
+                  '<div class="range-row"><span>Starting amount</span><b>' + moneyFull(CONTEST.lump) + '</b></div>' +
+                  '<div class="range-row"><span>Every month</span><b>' + moneyFull(CONTEST.monthly) + '</b></div>' +
+                  '<div class="range-row"><span>Same 40 years</span><b>for everyone</b></div>' +
+                '</div></div>' +
+              '<p class="hint">You cannot change the amounts. <b>The only things that separate you from the person next to you are your mix, ' +
+              'what you do when the market drops, and how your One Big Bet happens to go.</b></p>'
+            : '<label class="fld" for="lumpIn">Anything to start with?</label>' +
+              '<div class="money-in"><input type="number" inputmode="numeric" id="lumpIn" placeholder="0" min="0" step="50" value="' +
+                (state.lump ? state.lump : "") + '"></div>' +
+              '<p class="hint">Leave it blank if you are starting from nothing. That is where most people start.</p>' +
+              '<label class="fld" for="monIn">How much can you add each month?</label>' +
+              '<div class="money-in"><input type="number" inputmode="numeric" id="monIn" placeholder="0" min="0" step="25" value="' +
+                (plan0().monthly ? plan0().monthly : "") + '"></div>' +
+              chipRow("monChips", MONTHLY_OPTS, plan0().monthly, function (v) { return "$" + v; }) +
+              '<p class="hint">Type any amount, or tap one. You get chances to change it later, and whether you do is part of the lesson.</p>') +
           '<button class="btn" id="next">Build my mix</button>' +
           '<button class="btn ghost" id="reset">Start over</button>' +
         '</div>' +
       '</div>'
     ));
     state.justCleared = false;
+    if (CONTEST) {
+      state.lump = CONTEST.lump; plan0().monthly = CONTEST.monthly;
+      document.getElementById("next").onclick = function () { go("allocate"); };
+      document.getElementById("reset").onclick = function () { reset(false); };
+      return;
+    }
     var lumpIn = document.getElementById("lumpIn"), monIn = document.getElementById("monIn");
     lumpIn.addEventListener("input", function () { state.lump = Math.max(0, num(this.value)); save(); });
     monIn.addEventListener("input", function () {
@@ -498,7 +523,7 @@
     wireMix(mix, "a", "next");
     document.getElementById("next").onclick = function () {
       var ys = startYears();
-      state.startYear = ys[Math.floor(Math.random() * ys.length)];
+      state.startYear = CONTEST ? CONTEST.year : ys[Math.floor(Math.random() * ys.length)];
       state.salt = Math.floor(Math.random() * 1000000);
       state.cursorM = 0; state.outs = []; state.dipsUsed = 0;
       state.plans = [{ at: 0, monthly: plan0().monthly, mix: { stocks: mix.stocks, bonds: mix.bonds, bet: mix.bet } }];
@@ -592,9 +617,10 @@
         '<h1 class="title">Anything you want to change?</h1>' +
         context +
         assetTable(run.hist, Math.max(0, atM - 120), atM, normPct(lp.mix), "How each one did over the last stretch, per year") +
-        '<label class="fld">Monthly amount</label>' +
-        chipRow("cpMon", MONTHLY_OPTS, d.monthly, function (v) { return "$" + v; }) +
-        '<p class="hint">You have been putting in ' + moneyFull(lp.monthly) + ' a month.</p>' +
+        (CONTEST ? "" :
+          '<label class="fld">Monthly amount</label>' +
+          chipRow("cpMon", MONTHLY_OPTS, d.monthly, function (v) { return "$" + v; }) +
+          '<p class="hint">You have been putting in ' + moneyFull(lp.monthly) + ' a month.</p>') +
         '<label class="fld">Your mix</label>' +
         '<p class="hint" style="margin:0 0 4px">Move one and the others adjust. Leaving it alone is fine.</p>' +
         mixSliders(d.mix, "c", true) +
@@ -602,9 +628,11 @@
         '<p class="hint">Changing nothing is a real choice, and often the right one.</p>' +
       '</div></div>'
     ));
-    Array.prototype.forEach.call(document.getElementById("cpMon").querySelectorAll(".chip"), function (c) {
-      c.onclick = function () { state.draft.monthly = num(this.getAttribute("data-v")); save(); render(); };
-    });
+    if (!CONTEST) {
+      Array.prototype.forEach.call(document.getElementById("cpMon").querySelectorAll(".chip"), function (c) {
+        c.onclick = function () { state.draft.monthly = num(this.getAttribute("data-v")); save(); render(); };
+      });
+    }
     wireMix(d.mix, "c", "next");
     document.getElementById("next").onclick = function () {
       var changed = d.monthly !== lp.monthly || d.mix.stocks !== lp.mix.stocks ||
@@ -731,6 +759,20 @@
         '<div class="hero"><span class="cap">After 40 years</span>' +
           '<div class="huge">' + moneyFull(run.final) + '</div>' +
           '<span class="cap">You put in ' + moneyFull(run.contributed) + '. The market added ' + moneyFull(run.final - run.contributed) + '.</span></div>' +
+        (CONTEST
+          ? '<div class="card scorecard">' +
+              '<div class="perf-hd">Read this out</div>' +
+              '<div class="score">' + moneyFull(run.final) + '</div>' +
+              '<div class="scoremix">' + mixSummary(plan0().mix) + '</div>' +
+              '<div class="range" style="margin-top:10px">' +
+                '<div class="range-row"><span>The boring 80/20 got</span><b>' + moneyFull(base.final) + '</b></div>' +
+                '<div class="range-row"><span>You ' + (run.final >= base.final ? "beat it by" : "came up short by") + '</span>' +
+                  '<b class="' + (run.final >= base.final ? "pos" : "neg") + '">' + moneyFull(Math.abs(run.final - base.final)) + '</b></div>' +
+                (run.monthsOut > 0
+                  ? '<div class="range-row"><span>You sat out</span><b>' + monthsWord(run.monthsOut) + '</b></div>' : "") +
+              '</div>' +
+            '</div>'
+          : "") +
         chartSvg(run.hist, MONTHS) +
         '<div class="card" style="padding:14px 16px">' + rows + '</div>' +
         '<div class="card">' + assetTable(run.hist, 0, MONTHS, normPct(plan0().mix), "Across all 40 years, average per year") +
