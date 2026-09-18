@@ -178,6 +178,9 @@ input.bet::-moz-range-thumb{background:var(--bet)}
 .perf-row .vl{font-weight:800;font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
 .perf-row .vl i{font-style:normal;font-weight:600;font-size:11px;color:var(--muted);margin-left:2px}
 
+.waitrow{display:flex;gap:8px;margin-top:8px}
+.waitrow .chip{font-size:14px;padding:11px 4px}
+
 /* callouts */
 .callout{background:#F1F5F9;border:1px solid #DBE3EC;border-radius:12px;padding:12px 14px;font-size:13.5px;margin:10px 0;line-height:1.5}
 .callout.warn{background:#FEF6E7;border-color:#F6DFB0}
