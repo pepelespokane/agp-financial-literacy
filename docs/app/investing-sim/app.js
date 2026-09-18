@@ -465,14 +465,43 @@
         CLASSES.map(function (c) { return '<i class="' + c.key + '" id="' + prefix + 'bar_' + c.key + '"></i>'; }).join("") +
       '</div><div class="mixlabel" id="' + prefix + 'barlbl"></div>';
   }
-  /* Moving one slider redistributes the others so the mix always totals 100.
-     On a phone, making someone hand-balance three numbers to exactly 100 is the
-     fastest way to lose them. */
-  function rebalanceMix(mix, movedKey) {
+  /* Moving one slider redistributes the others so the mix always totals 100. On a phone,
+     making someone hand-balance three numbers to exactly 100 is the fastest way to lose
+     them.
+
+     WHICH slider absorbs the change matters. Spreading it proportionally across both of
+     the others silently undoes a value the athlete just set: asking for 50 stocks, then
+     50 bonds, used to land on 45/55 because the second move clawed back part of the
+     first. So a slider the athlete has already touched is treated as pinned, and the
+     change is absorbed by the ones they have not touched. Only when that is impossible
+     does it fall back to spreading the difference. */
+  function rebalanceMix(mix, movedKey, touched) {
     var v = Math.max(0, Math.min(100, mix[movedKey]));
     mix[movedKey] = v;
-    var others = CLASSES.map(function (c) { return c.key; }).filter(function (k) { return k !== movedKey; });
     var rest = 100 - v;
+    var others = CLASSES.map(function (c) { return c.key; }).filter(function (k) { return k !== movedKey; });
+    touched = touched || {};
+
+    var free = others.filter(function (k) { return !touched[k]; });
+    var pinned = others.filter(function (k) { return touched[k]; });
+    var pinnedSum = pinned.reduce(function (a, k) { return a + mix[k]; }, 0);
+
+    if (free.length && pinnedSum <= rest) {
+      var left = rest - pinnedSum;
+      if (free.length === 1) {
+        mix[free[0]] = left;
+      } else {
+        var fc = free.reduce(function (a, k) { return a + mix[k]; }, 0);
+        var f = fc <= 0 ? Math.round(left / 2 / 5) * 5
+                        : Math.round((mix[free[0]] / fc) * left / 5) * 5;
+        f = Math.max(0, Math.min(left, f));
+        mix[free[0]] = f;
+        mix[free[1]] = left - f;
+      }
+      return;
+    }
+    if (free.length) free.forEach(function (k) { mix[k] = 0; });
+
     var cur = others.reduce(function (a, k) { return a + mix[k]; }, 0);
     if (cur <= 0) {
       mix[others[0]] = Math.round(rest / 2 / 5) * 5;
@@ -485,6 +514,7 @@
     }
   }
   function wireMix(mix, prefix, btnId) {
+    var touched = {};   // reset per screen: which sliders has the athlete set on purpose
     function paint() {
       CLASSES.forEach(function (c) {
         document.getElementById(prefix + "v_" + c.key).textContent = mix[c.key] + "%";
@@ -498,7 +528,8 @@
     CLASSES.forEach(function (c) {
       document.getElementById(prefix + "s_" + c.key).addEventListener("input", function () {
         mix[c.key] = num(this.value);
-        rebalanceMix(mix, c.key);
+        touched[c.key] = true;
+        rebalanceMix(mix, c.key, touched);
         paint(); save();
       });
     });
