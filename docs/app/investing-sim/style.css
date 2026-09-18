@@ -111,6 +111,11 @@ input.bet::-moz-range-thumb{background:var(--bet)}
 /* four stats read better as 2x2 on a phone */
 .statrow.grid4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
+/* compact sliders for the check-in: they read the descriptions at setup */
+.alloc.compact{padding:4px 0;border-bottom:0}
+.alloc.compact .alloc-top{margin-bottom:0}
+/* height stays 44px: it is a touch target, not decoration */
+
 /* stacked mix bar */
 .mixbar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#E2E8F0;margin:14px 0 6px}
 .mixbar i{display:block;transition:width .12s ease}

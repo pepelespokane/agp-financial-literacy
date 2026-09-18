@@ -410,9 +410,9 @@
     document.getElementById("reset").onclick = function () { reset(false); };
   }
 
-  function mixSliders(mix, prefix) {
+  function mixSliders(mix, prefix, compact) {
     return CLASSES.map(function (c) {
-      return '<div class="alloc">' +
+      return '<div class="alloc' + (compact ? " compact" : "") + '">' +
         '<div class="alloc-top">' +
           '<div><span class="dot ' + c.key + '"></span><b>' + c.name + '</b>' +
             (c.real ? '<span class="badge real">real history</span>' : '<span class="badge model">modeled</span>') + '</div>' +
@@ -420,7 +420,7 @@
         '</div>' +
         '<input type="range" class="' + c.key + '" min="0" max="100" step="5" id="' +
           prefix + 's_' + c.key + '" value="' + mix[c.key] + '" aria-label="' + c.name + ' percentage">' +
-        '<div class="alloc-desc">' + c.desc + '</div>' +
+        (compact ? "" : '<div class="alloc-desc">' + c.desc + '</div>') +
       '</div>';
     }).join("") + mixBar(prefix);
   }
@@ -584,9 +584,8 @@
         chipRow("cpMon", MONTHLY_OPTS, d.monthly, function (v) { return "$" + v; }) +
         '<p class="hint">You have been putting in ' + moneyFull(lp.monthly) + ' a month.</p>' +
         '<label class="fld">Your mix</label>' +
-        '<button class="disclose" id="cpToggle"><span class="chev">&#9662;</span>Change my mix' +
-          '<span class="cur">Right now: ' + mixSummary(d.mix) + '</span></button>' +
-        '<div id="cpMix" hidden>' + mixSliders(d.mix, "c") + '</div>' +
+        '<p class="hint" style="margin:0 0 4px">Move one and the others adjust. Leaving it alone is fine.</p>' +
+        mixSliders(d.mix, "c", true) +
         '<button class="btn" id="next">Confirm and keep going</button>' +
         '<p class="hint">Changing nothing is a real choice, and often the right one.</p>' +
       '</div></div>'
@@ -594,14 +593,7 @@
     Array.prototype.forEach.call(document.getElementById("cpMon").querySelectorAll(".chip"), function (c) {
       c.onclick = function () { state.draft.monthly = num(this.getAttribute("data-v")); save(); render(); };
     });
-    var cpMix = document.getElementById("cpMix"), cpToggle = document.getElementById("cpToggle");
     wireMix(d.mix, "c", "next");
-    cpToggle.onclick = function () {
-      cpMix.hidden = !cpMix.hidden;
-      cpToggle.childNodes[1].nodeValue = cpMix.hidden ? "Change my mix" : "Keep it as it is";
-      cpToggle.querySelector(".chev").innerHTML = cpMix.hidden ? "&#9662;" : "&#9652;";
-      if (!cpMix.hidden) cpMix.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    };
     document.getElementById("next").onclick = function () {
       var changed = d.monthly !== lp.monthly || d.mix.stocks !== lp.mix.stocks ||
                     d.mix.bonds !== lp.mix.bonds || d.mix.bet !== lp.mix.bet;
