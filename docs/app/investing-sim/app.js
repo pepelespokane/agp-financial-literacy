@@ -129,6 +129,7 @@
     return out;
   }
 
+  function normPct(m) { return { stocks: m.stocks, bonds: m.bonds, bet: m.bet }; }
   function normalize(m) {
     var s = num(m.stocks) + num(m.bonds) + num(m.bet);
     if (s <= 0) return { stocks: 1, bonds: 0, bet: 0 };
@@ -206,6 +207,31 @@
   }
   /* Measured on the contribution-free unit value. Using the account balance hides
      drawdowns, because fresh money keeps topping it back up. */
+  /* Compounded average per year for each asset over a stretch. Without this the
+     check-in asks you to reallocate with no idea how each option actually did. */
+  function assetReturns(hist, from, to) {
+    var out = {};
+    CLASSES.forEach(function (c) {
+      var g = 1, n = 0;
+      for (var i = from; i < to && i < hist.length; i++) { g *= (1 + hist[i].r[c.key]); n++; }
+      out[c.key] = n ? Math.pow(g, 1 / n) - 1 : 0;
+    });
+    return out;
+  }
+  function assetTable(hist, from, to, mix, label) {
+    var r = assetReturns(hist, from, to);
+    var best = null;
+    CLASSES.forEach(function (c) { if (best === null || r[c.key] > r[best]) best = c.key; });
+    return '<div class="perf"><div class="perf-hd">' + label + '</div>' +
+      CLASSES.map(function (c) {
+        return '<div class="perf-row' + (c.key === best ? " top" : "") + '">' +
+          '<span class="dot ' + c.key + '"></span>' +
+          '<span class="nm">' + c.name + '</span>' +
+          (mix ? '<span class="held">' + (mix[c.key] > 0 ? "you held " + mix[c.key] + "%" : "not held") + '</span>' : "") +
+          '<span class="vl ' + (r[c.key] >= 0 ? "pos" : "neg") + '">' + pctStr(r[c.key]) + '<i>/yr</i></span>' +
+        '</div>';
+      }).join("") + '</div>';
+  }
   function maxDrawdown(hist, from, to) {
     var peak = -Infinity, dd = 0;
     for (var i = Math.max(0, from - 1); i < to && i < hist.length; i++) {
@@ -214,7 +240,13 @@
     }
     return dd;
   }
-  var DIP_THRESHOLD = -0.15;   // a year bad enough that real people bail
+  /* Trigger on how far the MARKET has fallen from its high, not on a single calendar
+     year. Two reasons. A single year <= -15% happens only once in 28 of the 59 possible
+     windows, so half of all players only ever saw one event. And people panic at an
+     accumulated loss and a headline, not at a year-end summary.
+     Measured on the market so a bond-heavy player still faces the decision; the screen
+     then shows the market drop AND their own, which is the diversification lesson. */
+  var DIP_DRAWDOWN = 0.10;
   var MAX_DIPS = 2;
   function currentlyOut() {
     var o = state.outs[state.outs.length - 1];
@@ -225,14 +257,27 @@
      - a bad year big enough that real people bail (at most MAX_DIPS times)
      - the ten year check-in
      - the end */
+  /* Market index and its drawdown, rebuilt from year 0 so it does not depend on the mix. */
+  function marketDrawdowns(run) {
+    var idx = 1, peak = 1, armed = true, out = [];
+    for (var i = 0; i < YEARS; i++) {
+      idx *= (1 + run.hist[i].r.stocks);
+      if (idx > peak) { peak = idx; armed = true; }
+      var dd = (peak - idx) / peak;
+      out.push({ dd: dd, fires: armed && dd >= DIP_DRAWDOWN });
+      if (armed && dd >= DIP_DRAWDOWN) armed = false;   // rearms only on a new market high
+    }
+    return out;
+  }
   function nextStop(run) {
     var c = state.cursor;
     if (c >= YEARS) return { at: YEARS, kind: "end" };
     if (currentlyOut()) return { at: c + 1, kind: "waiting" };
     var checkpoint = Math.min(YEARS, (Math.floor(c / 10) + 1) * 10);
     if (state.dipsUsed < MAX_DIPS) {
+      var md = marketDrawdowns(run);
       for (var i = c; i < checkpoint; i++) {
-        if (run.hist[i].r.stocks <= DIP_THRESHOLD && !isOut(i, state.outs)) return { at: i + 1, kind: "dip" };
+        if (md[i].fires && !isOut(i, state.outs)) return { at: i + 1, kind: "dip" };
       }
     }
     return { at: checkpoint, kind: checkpoint >= YEARS ? "end" : "checkpoint" };
@@ -439,10 +484,10 @@
         '<div class="bigfig">' + moneyFull(last.total) + '</div>' +
         '<div class="sub">You have put in ' + moneyFull(last.contributed) + '</div>' +
         chartSvg(run.hist, b.to) +
-        '<div class="statrow grid4">' +
-          '<div class="stat"><span>Market avg/yr</span><b class="' + (avg >= 0 ? "pos" : "neg") + '">' + pctStr(avg) + '</b><i>stocks</i></div>' +
-          '<div class="stat"><span>Market worst</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>stocks, year ' + (worst.i + 1) + '</i></div>' +
-          '<div class="stat"><span>Market best</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>stocks, year ' + (best.i + 1) + '</i></div>' +
+        assetTable(run.hist, b.from, b.to, normPct(lastPlan().mix), "How each one did, average per year") +
+        '<div class="statrow">' +
+          '<div class="stat"><span>Market worst year</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>stocks, year ' + (worst.i + 1) + '</i></div>' +
+          '<div class="stat"><span>Market best year</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>stocks, year ' + (best.i + 1) + '</i></div>' +
           '<div class="stat"><span>Your deepest drop</span><b class="' + (dd > 0.2 ? "neg" : "") + '">' +
             (Math.round(dd * 100) === 0 ? "none" : "-" + Math.round(dd * 100) + "%") + '</b><i>your mix</i></div>' +
         '</div>' +
@@ -478,6 +523,7 @@
         '<span class="tag">Check in &middot; end of year ' + at + '</span>' +
         '<h1 class="title">Anything you want to change?</h1>' +
         context +
+        assetTable(run.hist, Math.max(0, at - 10), at, normPct(lp.mix), "How each one did over the last stretch") +
         '<label class="fld">Monthly amount</label>' +
         chipRow("cpMon", MONTHLY_OPTS, d.monthly, function (v) { return "$" + v; }) +
         '<p class="hint">You have been putting in ' + moneyFull(lp.monthly) + ' a month.</p>' +
@@ -516,11 +562,14 @@
     var peak = 0;
     for (var k = 0; k <= i; k++) peak = Math.max(peak, run.hist[k].unit);
     var down = peak > 0 ? (peak - h.unit) / peak : 0;
+    var mdd = marketDrawdowns(run)[i].dd;
+    var cushioned = mdd - down >= 0.05;
     app.appendChild(el(
       '<div class="screen"><div class="card">' +
         '<span class="tag">Year ' + (i + 1) + '</span>' +
-        '<h1 class="title">The market just fell ' + Math.abs(Math.round(h.r.stocks * 100)) + '% this year.</h1>' +
-        '<div class="callout warn">Your money is down <b>' + Math.round(down * 100) + '%</b> from its high point. ' +
+        '<h1 class="title">The market is down ' + Math.round(mdd * 100) + '% from its high.</h1>' +
+        '<div class="callout warn">Your own money is down <b>' + Math.round(down * 100) + '%</b>. ' +
+        (cushioned ? '<b>Less than the market, because of what else you were holding.</b> ' : "") +
         'The news says it could get worse. <b>Nobody can tell you how far down it goes, or when it turns.</b></div>' +
         '<button class="choice" data-c="stay"><b>Ride it out</b><span>Stay invested and keep adding</span></button>' +
         '<button class="choice" data-c="out"><b>Get out and wait</b><span>Move everything to a high yield savings account until it settles down</span></button>' +
@@ -602,6 +651,8 @@
           '<span class="cap">You put in ' + moneyFull(run.contributed) + '. The market added ' + moneyFull(run.final - run.contributed) + '.</span></div>' +
         chartSvg(run.hist, YEARS) +
         '<div class="card" style="padding:14px 16px">' + rows + '</div>' +
+        '<div class="card">' + assetTable(run.hist, 0, YEARS, normPct(plan0().mix), "Across all 40 years, average per year") +
+          '<p class="hint">This is what each choice did over the whole stretch. Your result depends on how much you had in each one, and for how long.</p></div>' +
 
         '<div class="card"><h3>Those 40 years were real</h3>' +
           '<p class="sub">You were invested from <b>' + sy + ' to ' + ey + '</b>. Every stock and bond number you just saw is what actually happened in those years. Look it up.</p>' +
