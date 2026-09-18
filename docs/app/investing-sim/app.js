@@ -44,7 +44,7 @@
     var v = new URLSearchParams(window.location.search).get("contest");
     if (v === null) return null;
     var y = parseInt(v, 10);
-    return { lump: 10000, monthly: 100, year: (y >= 1928 && y <= 1986) ? y : 1965 };
+    return { lump: 10000, monthly: 100, year: (y >= 1928 && y <= 1986) ? y : 1985 };
   })();
 
   var START_OPTS = [0, 250, 500, 1000];
