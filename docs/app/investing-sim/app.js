@@ -727,7 +727,7 @@
         '<div class="hero"><span class="cap">After 40 years</span>' +
           '<div class="huge">' + moneyFull(run.final) + '</div>' +
           '<span class="cap">You put in ' + moneyFull(run.contributed) + '. The market added ' + moneyFull(run.final - run.contributed) + '.</span></div>' +
-        chartSvg(run.hist, YEARS) +
+        chartSvg(run.hist, MONTHS) +
         '<div class="card" style="padding:14px 16px">' + rows + '</div>' +
         '<div class="card">' + assetTable(run.hist, 0, MONTHS, normPct(plan0().mix), "Across all 40 years, average per year") +
           '<p class="hint">This is what each choice did over the whole stretch. Your result depends on how much you had in each one, and for how long.</p></div>' +
@@ -745,9 +745,9 @@
 
         (satOut
           ? (timingDiff > 0
-            ? '<div class="card flag"><h3>' + (run.yearsOut >= YEARS - 2
+            ? '<div class="card flag"><h3>' + (run.monthsOut >= MONTHS - 24
                 ? "You got out and never went back"
-                : "You sat in savings for " + run.yearsOut + " year" + (run.yearsOut === 1 ? "" : "s")) + '</h3>' +
+                : "You sat in savings for " + (run.monthsOut < 24 ? monthsWord(run.monthsOut) : run.yearsOut + " years")) + '</h3>' +
               '<p class="sub">Everything else identical, staying invested the whole way would have finished at <b>' + moneyFull(stayedIn.final) + '</b>. ' +
               'Sitting out cost you <b>' + moneyFull(timingDiff) + '</b>.</p>' +
               '<p class="hint">The drop was real and getting out felt sensible, and a high yield savings account was doing its job the whole time. ' +
