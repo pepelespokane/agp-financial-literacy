@@ -527,12 +527,17 @@
     var b = { from: state.cursorM, to: stop.at };
     if (b.to <= b.from) { state.cursorM = b.to; go(stop.kind === "end" ? "reveal" : stop.kind); return; }
     var last = run.hist[b.to - 1], dd = maxDrawdown(run.hist, b.from, b.to);
-    var worst = null, best = null, growth = 1;
+    var growth = 1, seen = {}, yrList = [];
     for (var i = b.from; i < b.to; i++) {
-      if (!worst || run.hist[i].r.stocks < worst.r.stocks) worst = run.hist[i];
-      if (!best || run.hist[i].r.stocks > best.r.stocks) best = run.hist[i];
       growth *= (1 + run.hist[i].r.stocks);
+      var yi = run.hist[i].y;
+      if (!seen[yi]) { seen[yi] = 1; yrList.push({ y: yi, r: run.hist[i].ann.stocks }); }
     }
+    var worst = yrList[0], best = yrList[0];
+    yrList.forEach(function (o) {
+      if (o.r < worst.r) worst = o;
+      if (o.r > best.r) best = o;
+    });
     var avg = Math.pow(growth, 12 / (b.to - b.from)) - 1;   // annualised
     app.appendChild(el(
       '<div class="screen"><div class="card">' +
@@ -542,8 +547,8 @@
         chartSvg(run.hist, b.to) +
         assetTable(run.hist, b.from, b.to, normPct(lastPlan().mix), "How each one did, average per year") +
         '<div class="statrow">' +
-          '<div class="stat"><span>Worst month</span><b class="neg">' + pctStr(worst.r.stocks) + '</b><i>stocks, year ' + (worst.y + 1) + '</i></div>' +
-          '<div class="stat"><span>Best month</span><b class="pos">' + pctStr(best.r.stocks) + '</b><i>stocks, year ' + (best.y + 1) + '</i></div>' +
+          '<div class="stat"><span>Worst year</span><b class="neg">' + pctStr(worst.r) + '</b><i>stocks, year ' + (worst.y + 1) + '</i></div>' +
+          '<div class="stat"><span>Best year</span><b class="pos">' + pctStr(best.r) + '</b><i>stocks, year ' + (best.y + 1) + '</i></div>' +
           '<div class="stat"><span>Your deepest drop</span><b class="' + (dd > 0.2 ? "neg" : "") + '">' +
             (Math.round(dd * 100) === 0 ? "none" : "-" + Math.round(dd * 100) + "%") + '</b><i>your mix</i></div>' +
         '</div>' +
