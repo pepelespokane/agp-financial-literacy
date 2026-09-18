@@ -519,6 +519,11 @@
   function renderSegment() {
     var run = currentRun();
     var stop = nextStop(run);
+    /* A crash, or the next update while sitting out, interrupts. Showing a tidy summary
+       first and making the athlete tap "keep going" defuses the whole moment. */
+    if (stop.kind === "dip" || stop.kind === "waiting") {
+      state.cursorM = stop.at; save(); go(stop.kind); return;
+    }
     var b = { from: state.cursorM, to: stop.at };
     if (b.to <= b.from) { state.cursorM = b.to; go(stop.kind === "end" ? "reveal" : stop.kind); return; }
     var last = run.hist[b.to - 1], dd = maxDrawdown(run.hist, b.from, b.to);
@@ -620,7 +625,9 @@
       '<div class="screen"><div class="card">' +
         '<span class="tag">Year ' + (h.y + 1) + ', month ' + h.month + '</span>' +
         '<h1 class="title">The market has fallen ' + Math.round(mdd * 100) + '% in ' + monthsWord(since) + '.</h1>' +
-        '<div class="callout warn">Your own money is down <b>' + Math.round(down * 100) + '%</b>. ' +
+        '<div class="bigfig">' + moneyFull(h.total) + '</div>' +
+        '<div class="sub">what you have right now, after putting in ' + moneyFull(h.contributed) + '</div>' +
+        '<div class="callout warn">Your own money is down <b>' + Math.round(down * 100) + '%</b> from its high. ' +
         (cushioned ? '<b>Less than the market, because of what else you were holding.</b> ' : "") +
         'The news says it could get worse. <b>Nobody can tell you how far down it goes, or when it turns.</b></div>' +
         '<button class="choice" data-c="stay"><b>Ride it out</b><span>Stay invested and keep adding</span></button>' +
@@ -655,6 +662,8 @@
         '<span class="tag">Year ' + (h.y + 1) + ', month ' + h.month + ' &middot; sitting in savings</span>' +
         '<h1 class="title">Over those ' + monthsWord(span) + ' the market went ' +
           (up ? "UP" : "DOWN") + ' ' + Math.abs(Math.round(moved * 100)) + '%.</h1>' +
+        '<div class="bigfig">' + moneyFull(h.total) + '</div>' +
+        '<div class="sub">sitting in savings</div>' +
         '<div class="callout ' + (up ? "warn" : "") + '">' +
           (up ? '<b>You were not in it.</b> Your savings account kept earning its steady rate while that happened.'
               : '<b>Staying out looks smart so far.</b> Your savings account held its value instead.') +
