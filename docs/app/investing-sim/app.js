@@ -62,6 +62,15 @@
   /* ---------------- state ---------------- */
   var KEY = "agp_investsim_v3";   // v2 held the pre-monthly state shape
   var state = null;
+  // Opened from a live session page (?from=session): send them back there instead of to 1-on-1 booking.
+  function sessionReturn() {
+    var q = new URLSearchParams(window.location.search);
+    if (q.get("from") !== "session") return "";
+    var keep = new URLSearchParams();
+    ["school", "team"].forEach(function (k) { if (q.get(k)) keep.set(k, q.get(k)); });
+    return "/app/session/" + (keep.toString() ? "?" + keep.toString() : "");
+  }
+
   function freshState() {
     return {
       screen: "welcome",
@@ -886,7 +895,9 @@
         '<div class="card center"><h3>Run it again</h3>' +
           '<p class="sub">Change one thing. A different mix, a different amount, a different call at the check-in. Watch what actually moves the number.</p>' +
           '<button class="btn" id="again">Play again</button>' +
-          '<a class="btn dark" href="https://calendar.app.google/SQV7d9eK7hsu2rLm8" target="_blank" rel="noopener">Book a free 1-on-1</a></div>' +
+          (sessionReturn()
+            ? '<a class="btn dark" style="text-decoration:none" href="' + sessionReturn() + '">Save and return to the session</a></div>'
+            : '<a class="btn dark" href="https://calendar.app.google/SQV7d9eK7hsu2rLm8" target="_blank" rel="noopener">Book a free 1-on-1</a></div>') +
 
         '<div class="card privacy"><h4>Where this lives</h4>' +
           '<p class="sub">Nothing you did here was sent anywhere. It is in this browser, on this device only. <b>AGP never sees it.</b></p>' +

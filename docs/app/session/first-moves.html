@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10243F">
+<title>My First 3 Moves | AGP Financial Literacy</title>
+<link rel="stylesheet" href="session.css?v=202610091900">
+<script src="session.js?v=202610091900"></script>
+</head>
+<body>
+  <header class="hdr">
+    <img class="hdr-logo" src="agp-logo-white.png" alt="AGP">
+    <div class="hdr-title">
+      <span class="hdr-main">My First 3 Moves</span>
+      <span id="brandSchool" class="hdr-sub"></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <a class="backlink" id="backTop" href="index.html">← Back to the session</a>
+    <h1 class="title">Pick your first three moves</h1>
+    <p class="lede">These are listed in a smart order. Check the three you will actually do in the next 30 days.</p>
+
+    <div class="card" id="list"></div>
+
+    <div class="card summary" id="summary" hidden>
+      <h3>My next 30 days</h3>
+      <ol id="picked"></ol>
+    </div>
+
+    <a class="btn" id="saveBack" href="index.html">Save and return to the session</a>
+    <p class="privacy" style="margin-top:10px">Saved on this device only. Nothing is sent anywhere.</p>
+    <button class="clear" id="clear">Clear my data from this device</button>
+  </main>
+
+  <footer class="foot">
+    AGP Financial Literacy provides financial education only and does not provide personalized investment, tax, or legal advice.
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "agp_session_moves_v1", MAX = 3;
+  var MOVES = AGPS.MOVES;
+  var picks = AGPS.load(KEY) || [];
+  var list = document.getElementById("list");
+
+  function render() {
+    list.innerHTML = MOVES.map(function (m, i) {
+      var on = picks.indexOf(i) >= 0, off = !on && picks.length >= MAX;
+      return '<label class="check"' + (off ? ' style="opacity:.45"' : "") + '><input type="checkbox" data-i="' + i + '"' +
+        (on ? " checked" : "") + (off ? " disabled" : "") + '><div><b>' + m[0] + '</b><span>' + m[1] + '</span></div></label>';
+    }).join("");
+    var sum = document.getElementById("summary");
+    sum.hidden = picks.length === 0;
+    document.getElementById("picked").innerHTML = picks.slice().sort(function (a, b) { return a - b; })
+      .map(function (i) { return "<li>" + MOVES[i][0] + "</li>"; }).join("");
+  }
+  list.addEventListener("change", function (e) {
+    var i = +e.target.getAttribute("data-i");
+    if (e.target.checked) { if (picks.length < MAX) picks.push(i); }
+    else picks = picks.filter(function (x) { return x !== i; });
+    AGPS.save(KEY, picks); render();
+  });
+  document.getElementById("clear").addEventListener("click", function () { AGPS.clear(KEY); picks = []; render(); });
+  render();
+})();
+  ["backTop", "saveBack"].forEach(function (id) {
+    var a = document.getElementById(id); if (a) a.href = AGPS.carry("index.html");
+  });
+</script>
+</body>
+</html>

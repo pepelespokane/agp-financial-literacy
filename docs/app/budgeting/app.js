@@ -605,7 +605,9 @@
         '<div class="card" style="text-align:center">' +
           '<h3>Nice work. You have a plan.</h3>' +
           '<p class="sub">Screenshot this so you have it on your device. Run it for 30 days, then adjust.</p>' +
-          '<a class="btn dark" href="https://calendar.app.google/SQV7d9eK7hsu2rLm8" target="_blank" rel="noopener">Book a free 1-on-1</a>' +
+          (sessionReturn()
+            ? '<a class="btn dark" style="text-decoration:none" href="' + sessionReturn() + '">Save and return to the session</a>'
+            : '<a class="btn dark" href="https://calendar.app.google/SQV7d9eK7hsu2rLm8" target="_blank" rel="noopener">Book a free 1-on-1</a>') +
           '<button class="btn secondary" id="edit">Adjust my buckets</button>' +
           '<button class="btn ghost" id="reset">Start over</button>' +
         '</div>' +
@@ -623,6 +625,15 @@
     document.getElementById("wipe").onclick = function () {
       if (confirm("Erase your budget from this device? This cannot be undone, so screenshot it first if you want to keep it.")) reset(true);
     };
+  }
+
+  // Opened from a live session page (?from=session): send them back there instead of to 1-on-1 booking.
+  function sessionReturn() {
+    var q = new URLSearchParams(window.location.search);
+    if (q.get("from") !== "session") return "";
+    var keep = new URLSearchParams();
+    ["school", "team"].forEach(function (k) { if (q.get(k)) keep.set(k, q.get(k)); });
+    return "/app/session/" + (keep.toString() ? "?" + keep.toString() : "");
   }
 
   function buildCoaching() {

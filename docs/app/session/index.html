@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10243F">
+<title>Money Foundations | AGP Financial Literacy</title>
+<link rel="stylesheet" href="session.css?v=202610091900">
+<script src="session.js?v=202610091900"></script>
+</head>
+<body>
+  <header class="hdr">
+    <img class="hdr-logo" src="agp-logo-white.png" alt="AGP">
+    <div class="hdr-title">
+      <span class="hdr-main">Money Foundations</span>
+      <span id="brandSchool" class="hdr-sub"></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1 class="title">Follow along, one step at a time</h1>
+    <p class="lede">Open each activity when we get to it. When you finish, tap "Back to the session" to come back here.</p>
+    <p class="privacy">Nothing you enter on any of these pages is sent anywhere. AGP never sees it.</p>
+
+    <div id="sections"></div>
+  </main>
+
+  <footer class="foot">
+    AGP Financial Literacy provides financial education only and does not provide personalized investment, tax, or legal advice.
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+  // Money Foundations session survey (Google Form).
+  var SURVEY_URL = "https://forms.gle/ZZUF13ykwg3XLEVN6";
+
+  var S = [
+    { t: "Financial goals", d: "Why goals come first. Write one short-term and one long-term goal.",
+      a: [["Open my goal card", "goals.html"]] },
+    { t: "Psychology of money", d: "Where your money habits came from and how they shape what you do today.",
+      p: "Watch for the anonymous Zoom poll: What is one money habit you want to get better at? No names are shown.", tag: "Poll" },
+    { t: "Budgeting: the five buckets", d: "Taxes, Expenses, Saving, Investing, Fun. Build yours as we go through each bucket.",
+      a: [["Build my budget", "../budgeting/"]], tag: "Poll" },
+    { t: "Spending and saving", d: "Triggers, lifestyle creep, paying yourself first, and the emergency fund.",
+      p: "Back in your budget: find one cut in Fun or Expenses, and move it to Saving.", tag: "Poll" },
+    { t: "Compounding", d: "Why starting early is the biggest advantage you have.",
+      a: [["Open the compound calculator", "../compound-calculator/"]],
+      p: "Try $100 a month starting at your age, then again 10 years later. Post the difference in the chat." },
+    { t: "Risk vs. reward", d: "Stocks, bonds, index funds, and why time matters more than luck.",
+      a: [["Play the investing simulation", "../investing-sim/?contest=1"]] },
+    { t: "Getting started", d: "The first moves, in order. Pick the three you will do in the next 30 days.",
+      a: [["Pick my first 3 moves", "first-moves.html"]], tag: "Poll" },
+    { t: "Wrap-up", d: "Look back at your goal. Change anything after today?",
+      a: [["Review my goal card", "goals.html#review"]], survey: true }
+  ];
+
+  var SEEN_KEY = "agp_session_seen_v1";
+  var seen = AGPS.load(SEEN_KEY) || [];
+  var html = "";
+  S.forEach(function (s, i) {
+    var done = seen.indexOf(i) >= 0;
+    html += '<section class="card' + (done ? " done" : "") + '"><div class="sec-head"><span class="num">' + (done ? "✓" : (i + 1)) + '</span><h3>' + s.t + '</h3>' +
+      (s.tag ? '<span class="tag">' + s.tag + '</span>' : "") + '</div><p>' + s.d + '</p>';
+    (s.a || []).forEach(function (a) {
+      var u = a[1].indexOf("../") === 0 ? a[1] + (a[1].indexOf("?") >= 0 ? "&" : "?") + "from=session" : a[1];
+      html += '<a class="btn" data-sec="' + i + '" href="' + AGPS.carry(u) + '">' + a[0] + '</a>';
+    });
+    if (s.p) html += '<div class="prompt">' + s.p + '</div>';
+    if (s.survey) {
+      html += SURVEY_URL
+        ? '<a class="btn ghost" data-sec="' + i + '" target="_blank" rel="noopener" href="' + SURVEY_URL + '">Take the 2-minute survey (opens a new tab)</a>'
+        : '<a class="btn ghost" aria-disabled="true">Survey link coming</a>';
+      html += '<div class="recap"><h3 style="margin-top:14px">Keep your work</h3>' +
+        '<p>Email yourself a recap: your goals, your first 3 moves, your budget, and links to every tool. It opens your own email app; AGP never sees it.</p>' +
+        '<label class="fld" for="recapEmail">Your email (optional)</label>' +
+        '<input type="text" id="recapEmail" inputmode="email" autocomplete="email" placeholder="you@example.com">' +
+        '<a class="btn" id="recapMail" href="#" style="margin-top:10px">Email my recap to myself</a>' +
+        '<button class="btn ghost" id="recapCopy" type="button">Copy my recap instead</button>' +
+        '<p class="hint" id="recapMsg">No email app on this computer? Use Copy, then paste it into an email or your notes.</p></div>';
+    }
+    html += "</section>";
+  });
+  document.getElementById("sections").innerHTML = html;
+  document.getElementById("sections").addEventListener("click", function (e) {
+    var b = e.target.closest("a[data-sec]");
+    if (!b) return;
+    var n = +b.getAttribute("data-sec");
+    if (seen.indexOf(n) < 0) { seen.push(n); AGPS.save(SEEN_KEY, seen); }
+  });
+  // ---- Recap: built on this device, sent from the athlete's own email app (mailto). Nothing goes to AGP. ----
+  function money(n) { n = Math.round(Number(String(n).replace(/[^0-9.\-]/g, "")) || 0); return "$" + n.toLocaleString("en-US"); }
+  function recapText() {
+    var L = [], g = AGPS.load("agp_session_goals_v1") || {}, picks = AGPS.load("agp_session_moves_v1") || [];
+    var bud = AGPS.load("agp_budget_v2"), site = "https://agpfinancialliteracy.com";
+    var team = AGPS.team ? " " + AGPS.team : "", school = AGPS.cfg.name ? AGPS.cfg.name + team : "AGP";
+    L.push("My Money Foundations recap (" + school + ", " + new Date().toLocaleDateString("en-US") + ")", "");
+    L.push("MY GOALS");
+    L.push("This year: " + (g.short || "(not filled in)"));
+    L.push("In 5 years: " + (g.long || "(not filled in)"));
+    if (g.step) L.push("This month: " + g.step);
+    if (g.change) L.push("After today: " + g.change);
+    L.push("", "MY FIRST 3 MOVES");
+    if (picks.length) picks.slice().sort(function (a, b) { return a - b; }).forEach(function (i, n) { L.push((n + 1) + ". " + AGPS.MOVES[i][0]); });
+    else L.push("(not picked yet)");
+    if (bud && bud.buckets) {
+      var b = bud.buckets;
+      L.push("", "MY MONTHLY BUDGET (five buckets)");
+      [["tax", "Taxes"], ["expenses", "Expenses"], ["emergency", "Emergency Fund"], ["investing", "Investing"], ["fun", "Fun"]]
+        .forEach(function (k) { L.push(k[1] + ": " + money(b[k[0]])); });
+    }
+    var qs = "?school=" + encodeURIComponent(AGPS.school);
+    L.push("", "MY TOOLS");
+    L.push("Session page: " + site + "/app/session/" + qs + (AGPS.team ? "&team=" + encodeURIComponent(new URLSearchParams(location.search).get("team")) : ""));
+    L.push("Build Your Budget: " + site + "/app/budgeting/" + qs);
+    L.push("Compound Interest Calculator: " + site + "/app/compound-calculator/" + qs);
+    L.push("Investing Simulation: " + site + "/app/investing-sim/" + qs);
+    L.push("", "Your entries are saved only on the device you used today. On another device, the tools start blank.");
+    L.push("", "Questions? stephen.pugh@agpfinancialliteracy.com");
+    L.push("Book a free 1-on-1: https://calendar.app.google/SQV7d9eK7hsu2rLm8");
+    return L.join("\n");
+  }
+  var mailBtn = document.getElementById("recapMail");
+  if (mailBtn) {
+    mailBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      var to = (document.getElementById("recapEmail").value || "").trim();
+      location.href = "mailto:" + encodeURIComponent(to).replace(/%40/g, "@") +
+        "?subject=" + encodeURIComponent("My Money Foundations recap") + "&body=" + encodeURIComponent(recapText());
+    });
+    document.getElementById("recapCopy").addEventListener("click", function () {
+      var t = recapText(), msg = document.getElementById("recapMsg");
+      function done(ok) { msg.textContent = ok ? "Copied. Paste it into an email or your notes." : "Could not copy automatically. Select and copy the text below."; }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { done(true); }, function () { fallback(); });
+      else fallback();
+      function fallback() { var ta = document.createElement("textarea"); ta.value = t; ta.style.marginTop = "8px"; msg.after(ta); ta.select(); done(false); }
+    });
+  }
+
+  // Return to where they left off.
+  if (seen.length) {
+    var last = document.querySelectorAll("#sections .card")[Math.max.apply(null, seen)];
+    if (last && !location.hash) last.scrollIntoView({ block: "center" });
+  }
+})();
+</script>
+</body>
+</html>
