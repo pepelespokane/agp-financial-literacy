@@ -23,6 +23,8 @@
     <p class="privacy">Nothing you enter on any of these pages is sent anywhere. AGP never sees it.</p>
 
     <div id="sections"></div>
+    <button class="clear" id="clearAll" type="button">Clear everything from this device</button>
+    <p class="hint" style="text-align:center">Removes your goals, moves, budget, and simulation from this device. Use it on a shared or borrowed computer.</p>
   </main>
 
   <footer class="foot">
@@ -41,16 +43,16 @@
     { t: "Psychology of money", d: "Where your money habits came from and how they shape what you do today.",
       p: "Watch for the anonymous Zoom poll: What is one money habit you want to get better at? No names are shown.", tag: "Poll" },
     { t: "Budgeting: the five buckets", d: "Taxes, Expenses, Saving, Investing, Fun. Build yours as we go through each bucket.",
-      a: [["Build my budget", "../budgeting/"]], tag: "Poll" },
+      a: [["Build my budget", "../budgeting/"]] },
     { t: "Spending and saving", d: "Triggers, lifestyle creep, paying yourself first, and the emergency fund.",
-      p: "Back in your budget: find one cut in Fun or Expenses, and move it to Saving.", tag: "Poll" },
+      p: "Back in your budget: find one cut in Fun or Expenses and move it to Saving. Then share it in the anonymous Zoom poll: What is one thing you could cut from your spending?", tag: "Poll" },
     { t: "Compounding", d: "Why starting early is the biggest advantage you have.",
       a: [["Open the compound calculator", "../compound-calculator/"]],
       p: "Try $100 a month starting at your age, then again 10 years later. Post the difference in the chat." },
     { t: "Risk vs. reward", d: "Stocks, bonds, index funds, and why time matters more than luck.",
       a: [["Play the investing simulation", "../investing-sim/?contest=1"]] },
     { t: "Getting started", d: "The first moves, in order. Pick the three you will do in the next 30 days.",
-      a: [["Pick my first 3 moves", "first-moves.html"]], tag: "Poll" },
+      a: [["Pick my first 3 moves", "first-moves.html"]] },
     { t: "Wrap-up", d: "Look back at your goal. Change anything after today?",
       a: [["Review my goal card", "goals.html#review"]], survey: true }
   ];
@@ -136,6 +138,12 @@
       function fallback() { var ta = document.createElement("textarea"); ta.value = t; ta.style.marginTop = "8px"; msg.after(ta); ta.select(); done(false); }
     });
   }
+
+  document.getElementById("clearAll").addEventListener("click", function () {
+    if (!confirm("Clear your goals, first moves, budget, and simulation from this device?")) return;
+    ["agp_session_seen_v1", "agp_session_goals_v1", "agp_session_moves_v1", "agp_budget_v2", "agp_investsim_v3"].forEach(AGPS.clear);
+    location.reload();
+  });
 
   // Return to where they left off.
   if (seen.length) {
